@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#4CAF50</color>
+    <color name="purple_500">#8BC34A</color>
+    <color name="purple_700">#4CAF50</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    
+    <!-- Custom colors -->
+    <color name="background">#FFFFFF</color>
+    <color name="primary">#1976D2</color>
+    <color name="primary_light">#63A4FF</color>
+    
+    <!-- Custom colors for registro -->
+    <color name="title_green">#4CAF50</color>
+    <color name="title_green_light">#A5D6A7</color>
+    <color name="select_image_red">#FF5252</color>
+    <color name="input_text_gray">#757575</color>
+    <color name="input_text_black">#212121</color>
+    <color name="register_button_dark_yellow">#FBC02D</color>
+    <color name="register_button_light_yellow">#FFE082</color>
+</resources>

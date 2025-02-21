@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="@color/background"
+    android:animateLayoutChanges="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="REGISTRO DE LAPTOPS"
+            android:textAlignment="center"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="@color/title_green"
+            android:background="@color/title_green_light"
+            android:padding="8dp"
+            android:layout_marginBottom="24dp"
+            android:fontFamily="sans-serif-medium"/>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="4dp"
+            android:animateLayoutChanges="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <ImageView
+                    android:id="@+id/imagenLaptop"
+                    android:layout_width="200dp"
+                    android:layout_height="200dp"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="16dp"
+                    android:background="@drawable/image_background"
+                    android:scaleType="centerCrop"
+                    android:transitionName="laptop_image" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSeleccionarImagen"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Seleccionar Imagen"
+                    android:textColor="@color/select_image_red"
+                    app:icon="@drawable/ic_image"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- First TextInputLayout as template for all others -->
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:hint="Marca"
+            android:textColorHint="@color/input_text_gray"
+            app:boxStrokeColor="#2196F3"
+            app:hintTextColor="@color/input_text_gray">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editMarca"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:textColor="@color/input_text_gray" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:hint="Modelo"
+            android:textColorHint="@color/input_text_gray"
+            app:boxStrokeColor="#2196F3"
+            app:hintTextColor="@color/input_text_gray">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editModelo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:textColor="@color/input_text_gray" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:hint="Número de Serie"
+            android:textColorHint="@color/input_text_gray"
+            app:boxStrokeColor="#2196F3"
+            app:hintTextColor="@color/input_text_gray">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editSerialNumber"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:textColor="@color/input_text_gray" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:hint="Estado"
+            android:textColorHint="@color/input_text_gray"
+            app:boxStrokeColor="#2196F3"
+            app:hintTextColor="@color/input_text_gray">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editEstado"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:textColor="@color/input_text_gray" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:hint="Observaciones"
+            android:textColorHint="@color/input_text_gray"
+            app:boxStrokeColor="#2196F3"
+            app:hintTextColor="@color/input_text_gray">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editObservaciones"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:textColor="@color/input_text_gray" />
+        </com.google.android.material.textfield.TextInputLayout>
+        <!-- Remove the Ubicación TextInputLayout completely -->
+        <!-- Continue with the same pattern for remaining TextInputLayouts -->
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnRegistrar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="70dp"
+            android:padding="15dp"
+            android:text="Registrar Laptop"
+            android:textSize="16sp"
+            android:backgroundTint="@color/register_button_dark_yellow"
+            app:strokeColor="@color/register_button_light_yellow"
+            app:strokeWidth="2dp"
+            app:cornerRadius="12dp"
+            android:elevation="4dp" />
+
+
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>
