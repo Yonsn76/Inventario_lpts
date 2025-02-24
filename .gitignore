@@ -1,15 +1,40 @@
+
+# Android specific
+*.apk
+*.ap_
+*.dex
+*.class
+*.jar
+*.war
+*.ear
+*.exe
+*.dll
+*.so
+*.dylib
+*.tmp
+*.temp
+*.log
+
+# Android Studio specific
+.idea/
+*.iws
+*.ipr
 *.iml
-.gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
+
+# Gradle specific
+.gradle/
+build/
+captures/
+output.json
 local.properties
+
+# MacOS specific
+.DS_Store
+
+# Windows specific
+Thumbs.db
+
+# Additional Android specific
+gen/
+bin/
+out/
