@@ -6,8 +6,12 @@
         android:title="Inicio" />
     <item
         android:id="@+id/menuRegistro"
-        android:icon="@drawable/ic_registro"
+        android:icon="@drawable/registro"
         android:title="Registro" />
+    <item
+        android:id="@+id/menuEdicion"
+        android:icon="@drawable/edicion"
+        android:title="Edicion" />
     <item
         android:id="@+id/menuHistorial"
         android:icon="@drawable/ic_historial"

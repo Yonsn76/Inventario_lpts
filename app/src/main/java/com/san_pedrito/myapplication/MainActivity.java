@@ -36,6 +36,16 @@ public class MainActivity extends AppCompatActivity {
             } else if (itemId == R.id.menuHistorial) {
                 // Manejar clic en Historial
                 return true;
+            } else if (itemId == R.id.menuEdicion) {
+                getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.contenedorFragmentos, new EdicionFragment())
+                    .commit();
+                return true;
+            } else if (itemId == R.id.menuEdicion) {
+                getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.contenedorFragmentos, new EdicionFragment())
+                    .commit();
+                return true;
             }
             return false;
         });

@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Contenedor Principal - Pantalla de inicio de la aplicación -->
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!-- Imagen del Logo Superior - Muestra el nombre de la aplicación -->
     <ImageView
         android:id="@+id/imageView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="301dp"
+        android:layout_height="87dp"
         android:scaleType="fitCenter"
         android:src="@drawable/nombre"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -16,31 +19,35 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.066" />
 
+    <!-- Imagen Principal - Ilustración central de la aplicación -->
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="435dp"
-        android:layout_height="478dp"
+        android:layout_width="309dp"
+        android:layout_height="454dp"
         android:scaleType="fitCenter"
         android:src="@drawable/img"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.421"
+        app:layout_constraintHorizontal_bias="0.528"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.686" />
+        app:layout_constraintVertical_bias="0.334" />
 
+    <!-- Botón de Nuevo Registro - Permite acceder al formulario de registro -->
     <Button
         android:id="@+id/btn_nuevo_registro"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:text="Nuevo Registro"
-        android:backgroundTint="@color/design_default_color_primary"
-        android:textColor="@android:color/white"
+        android:layout_marginEnd="108dp"
+        android:layout_marginBottom="76dp"
+        android:backgroundTint="@color/verde_forestal"
         android:drawableEnd="@drawable/ic_arrow_forward"
         android:padding="16dp"
+        android:text="Nuevo Registro"
+        android:textColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

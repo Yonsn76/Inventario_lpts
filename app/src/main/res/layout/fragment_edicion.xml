@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Contenedor Principal - Pantalla para editar registros de laptops -->
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <!-- Sección del Título - Muestra el encabezado de modificación -->
+    <TextView
+        android:id="@+id/titleText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="MODIFICAR REGISTROS"
+        android:textSize="24sp"
+        android:backgroundTint="@color/azul_bebé"
+        android:textStyle="bold"
+        android:textColor="#072428"
+        android:background="@drawable/fondo_redondo"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="16dp"
+        android:alpha="0.5" />
+
+    <!-- Campo de Búsqueda - Permite buscar laptops por número de serie -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/searchLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:hint="Numero de serie"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        app:layout_constraintTop_toBottomOf="@id/titleText"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:endIconMode="custom"
+        app:endIconDrawable="@drawable/search"
+        app:endIconTint="@color/input_text_gray"
+        android:textColorHint="@color/input_text_gray"
+        app:boxStrokeColor="#2196F3"
+        app:hintTextColor="@color/input_text_gray">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editSearchSerialNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="@color/input_text_gray"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Tarjeta de Imagen - Muestra la foto de la laptop -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/imageCard"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="4dp"
+        app:layout_constraintTop_toBottomOf="@id/searchLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/imagenLaptop"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:background="#CCCCCC"
+                android:scaleType="centerCrop" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fabCamera"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:layout_margin="16dp"
+                android:backgroundTint="#FFFFFF"
+                app:srcCompat="@drawable/camara"
+                app:fabSize="mini"/>
+        </FrameLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/imageCard"
+        app:layout_constraintVertical_bias="1.0"
+        tools:layout_editor_absoluteX="16dp">
+
+        <!-- Fila de Marca y Modelo - Campos para editar información básica -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
+                android:hint="Marca"
+                android:textColorHint="@color/input_text_gray"
+                app:boxStrokeColor="#2196F3"
+                app:hintTextColor="@color/input_text_gray">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editMarca"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/input_text_gray" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:hint="Modelo"
+                android:textColorHint="@color/input_text_gray"
+                app:boxStrokeColor="#2196F3"
+                app:hintTextColor="@color/input_text_gray">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editModelo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/input_text_gray" />
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+
+        <!-- Fila de Número de Serie y Estado - Campos para información de identificación -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal">
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
+                android:hint="Nro Serie"
+                android:textColorHint="@color/input_text_gray"
+                app:boxStrokeColor="#2196F3"
+                app:hintTextColor="@color/input_text_gray">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editNroSerie"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/input_text_gray" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:hint="Estado"
+                android:textColorHint="@color/input_text_gray"
+                app:boxStrokeColor="#2196F3"
+                app:hintTextColor="@color/input_text_gray">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editEstado"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/input_text_gray" />
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+
+        <!-- Campo de Observaciones - Área para notas adicionales -->
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="Observcion"
+            android:textColorHint="@color/input_text_gray"
+            app:boxStrokeColor="#2196F3"
+            app:hintTextColor="@color/input_text_gray">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editObservacion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/input_text_gray" />
+        </com.google.android.material.textfield.TextInputLayout>
+    </LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabSave"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:backgroundTint="#FFFFFF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/guardar"
+        app:fabSize="normal"
+        app:tint="#000000"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
