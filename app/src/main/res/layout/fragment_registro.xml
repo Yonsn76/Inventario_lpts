@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Contenedor Principal con Soporte de Desplazamiento -->
 <androidx.core.widget.NestedScrollView 
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -15,7 +14,6 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- Sección del Título - Muestra "REGISTRAR LAPTOPS" -->
         <TextView
             android:id="@+id/titleText"
             android:layout_width="wrap_content"
@@ -34,15 +32,13 @@
             android:textSize="24sp"
             android:textStyle="bold" />
 
-        <!-- Línea Divisora -->
         <View
             android:layout_width="match_parent"
             android:layout_height="2dp"
             android:layout_marginTop="24dp"
             android:layout_marginBottom="16dp"
-             />
+            android:alpha="0.5" />
 
-        <!-- Sección de Carga de Imagen - Tarjeta que contiene vista previa y botones de carga -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -57,7 +53,6 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <!-- Área de Vista Previa de Imagen -->
                 <ImageView
                     android:id="@+id/imagenLaptop"
                     android:layout_width="200dp"
@@ -68,7 +63,6 @@
                     android:scaleType="centerCrop"
                     android:transitionName="laptop_image" />
 
-                <!-- Botones de Selección de Imagen -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnSeleccionarImagen"
                     android:layout_width="wrap_content"
@@ -85,12 +79,12 @@
                     android:layout_gravity="center"
                     android:backgroundTint="@color/verde_primavera"
                     android:text="📷Tomar Foto"
+
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Sección de Campos de Entrada - Contiene todos los campos TextInputLayout -->
-        <!-- Campo de Entrada de Marca -->
+        <!-- First TextInputLayout as template for all others -->
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
@@ -109,7 +103,6 @@
                 android:textColor="@color/input_text_gray" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Campo de Entrada de Modelo -->
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
@@ -128,7 +121,6 @@
                 android:textColor="@color/input_text_gray" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Campo de Entrada de Número de Serie -->
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
@@ -147,7 +139,6 @@
                 android:textColor="@color/input_text_gray" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Campo de Entrada de Estado -->
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
@@ -166,7 +157,6 @@
                 android:textColor="@color/input_text_gray" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Campo de Entrada de Observaciones -->
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
@@ -184,8 +174,9 @@
                 android:textSize="16sp"
                 android:textColor="@color/input_text_gray" />
         </com.google.android.material.textfield.TextInputLayout>
+        <!-- Remove the Ubicación TextInputLayout completely -->
+        <!-- Continue with the same pattern for remaining TextInputLayouts -->
 
-        <!-- Sección del Botón de Registro -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnRegistrar"
             android:layout_width="match_parent"
@@ -200,6 +191,7 @@
             app:strokeWidth="2dp"
             app:cornerRadius="12dp"
             android:elevation="4dp" />
+
 
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

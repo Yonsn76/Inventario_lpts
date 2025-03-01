@@ -1,6 +1,7 @@
 package com.san_pedrito.myapplication;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -54,6 +55,7 @@ public class EdicionFragment extends Fragment {
         
         imagenLaptop = view.findViewById(R.id.imagenLaptop);
         FloatingActionButton fabCamera = view.findViewById(R.id.fabCamera);
+        FloatingActionButton fabDelete = view.findViewById(R.id.fabDelete);
         FloatingActionButton fabSave = view.findViewById(R.id.fabSave);
 
         fabCamera.setOnClickListener(v -> {
@@ -63,6 +65,19 @@ public class EdicionFragment extends Fragment {
             } else {
                 Toast.makeText(getContext(), "Cámara no disponible", Toast.LENGTH_SHORT).show();
             }
+        });
+
+        fabDelete.setOnClickListener(v -> {
+            // Add delete confirmation dialog
+            new AlertDialog.Builder(getContext())
+                .setTitle("Confirmar eliminación")
+                .setMessage("¿Estás seguro de que quieres eliminar este registro?")
+                .setPositiveButton("Sí", (dialog, which) -> {
+                    // Add your delete logic here
+                    Toast.makeText(getContext(), "Registro eliminado", Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton("No", null)
+                .show();
         });
 
         fabSave.setOnClickListener(v -> {

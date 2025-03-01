@@ -211,6 +211,21 @@
         </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>
 
+    <!-- Botón flotante para eliminar - Permite borrar el registro actual -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabDelete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="250dp"
+        android:backgroundTint="#FF5252"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/fabSave"
+        app:srcCompat="@drawable/delete"
+        app:fabSize="normal"
+        app:tint="#FFFFFF"/>
+
+    <!-- Botón flotante para guardar - Permite salvar los cambios realizados -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabSave"
         android:layout_width="wrap_content"

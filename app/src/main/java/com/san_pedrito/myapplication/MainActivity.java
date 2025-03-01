@@ -34,7 +34,9 @@ public class MainActivity extends AppCompatActivity {
                     .commit();
                 return true;
             } else if (itemId == R.id.menuHistorial) {
-                // Manejar clic en Historial
+                getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.contenedorFragmentos, new HistorialFragment())
+                    .commit();
                 return true;
             } else if (itemId == R.id.menuEdicion) {
                 getSupportFragmentManager().beginTransaction()

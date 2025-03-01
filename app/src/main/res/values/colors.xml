@@ -21,6 +21,7 @@
     <color name="input_text_black">#212121</color>
     <color name="register_button_dark_yellow">#FBC02D</color>
     <color name="register_button_light_yellow">#FFE082</color>
+    <color name="chip_background_color">#E8F5E9</color>
 
     <!--Mas colores -->
     <color name="amber">#FFBF00</color>
