@@ -10,6 +10,8 @@ import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -39,6 +41,11 @@ public class HistorialFragment extends Fragment {
     private LaptopDatabaseHelper dbHelper;
     private ChipGroup filterChipGroup;
     private List<Laptop> allLaptops;
+    private View exportPanel;
+    private ExportPanelManager exportPanelManager;
+    private boolean isPanelShowing = false;
+    private Animation slideUpAnimation;
+    private Animation slideDownAnimation;
 
     public HistorialFragment() {
         // Required empty public constructor
@@ -63,9 +70,8 @@ public class HistorialFragment extends Fragment {
         // Inicializar ChipGroup para filtros
         filterChipGroup = view.findViewById(R.id.filterChipGroup);
         
-        // Configurar botón flotante de exportar
-        FloatingActionButton fabExport = view.findViewById(R.id.fabExport);
-        fabExport.setOnClickListener(v -> showExportDialog());
+        // Inicializar panel de exportación y animaciones
+        setupExportPanel(view);
         
         // Cargar todos los registros de laptops
         loadAllLaptops();
@@ -76,35 +82,33 @@ public class HistorialFragment extends Fragment {
         return view;
     }
     
-    private void showExportDialog() {
-        String[] options = {"Excel (.xls)", "PDF (.pdf)", "CSV (.csv)"};
+    private void setupExportPanel(View view) {
+        exportPanel = view.findViewById(R.id.exportPanel);
+        FloatingActionButton fabExport = view.findViewById(R.id.fabExport);
         
-        new AlertDialog.Builder(getContext())
-            .setTitle("Seleccionar formato de exportación")
-            .setItems(options, (dialog, which) -> {
-                switch (which) {
-                    case 0: // Excel
-                        exportToExcel();
-                        break;
-                    case 1: // PDF
-                        exportToPDF();
-                        break;
-                    case 2: // CSV
-                        exportToCSV();
-                        break;
-                }
-            })
-            .show();
+        // Inicializar ExportPanelManager
+        exportPanelManager = new ExportPanelManager(exportPanel);
+
+        // Configurar botón flotante
+        fabExport.setOnClickListener(v -> exportPanelManager.togglePanel());
+
+        // Configurar botones de exportación
+        view.findViewById(R.id.btnExcel).setOnClickListener(v -> {
+            exportToExcel();
+            exportPanelManager.togglePanel();
+        });
+
+        view.findViewById(R.id.btnPdf).setOnClickListener(v -> {
+            exportToPDF();
+            exportPanelManager.togglePanel();
+        });
+
+        view.findViewById(R.id.btnCsv).setOnClickListener(v -> {
+            exportToCSV();
+            exportPanelManager.togglePanel();
+        });
     }
 
-    private void exportToPDF() {
-        Toast.makeText(getContext(), "Exportación a PDF será implementada próximamente", Toast.LENGTH_SHORT).show();
-    }
-
-    private void exportToCSV() {
-        Toast.makeText(getContext(), "Exportación a CSV será implementada próximamente", Toast.LENGTH_SHORT).show();
-    }
-    
     private void loadAllLaptops() {
         try {
             // Obtener todas las laptops de la base de datos
@@ -284,5 +288,13 @@ public class HistorialFragment extends Fragment {
                 }
             }
         }).start();
+    }
+
+    private void exportToPDF() {
+        Toast.makeText(getContext(), "Exportación a PDF será implementada próximamente", Toast.LENGTH_SHORT).show();
+    }
+
+    private void exportToCSV() {
+        Toast.makeText(getContext(), "Exportación a CSV será implementada próximamente", Toast.LENGTH_SHORT).show();
     }
 }
