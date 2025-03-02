@@ -8,8 +8,10 @@ package com.san_pedrito.myapplication;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -25,6 +27,10 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.san_pedrito.myapplication.db_kt.Laptop;
 import com.san_pedrito.myapplication.db_kt.LaptopDatabaseHelper;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class EdicionFragment extends Fragment {
     // Elementos de la interfaz de usuario
@@ -35,7 +41,8 @@ public class EdicionFragment extends Fragment {
     private LaptopDatabaseHelper dbHelper;
     private Laptop currentLaptop;
     private String currentImagePath;
-
+    private ActivityResultLauncher<String> requestCameraPermissionLauncher;
+    
     /**
      * Inicializa el fragmento, la conexión a la base de datos y los launchers para
      * la selección de imágenes y la cámara.
@@ -45,32 +52,19 @@ public class EdicionFragment extends Fragment {
         super.onCreate(savedInstanceState);
         dbHelper = new LaptopDatabaseHelper(requireContext());
         
-        // Launcher para seleccionar imágenes de la galería
-        imagePickerLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                if (result.getResultCode() == Activity.RESULT_OK) {
-                    Uri imageUri = result.getData().getData();
-                    imagenLaptop.setImageURI(imageUri);
-                    currentImagePath = imageUri.toString();
+        // Initialize permission launcher
+        requestCameraPermissionLauncher = registerForActivityResult(
+            new ActivityResultContracts.RequestPermission(),
+            isGranted -> {
+                if (isGranted) {
+                    // Permission granted, launch camera
+                    launchCamera();
+                } else {
+                    Toast.makeText(getContext(), "Se requiere permiso de cámara para esta función", Toast.LENGTH_SHORT).show();
                 }
-            }
-        );
-
-        // Launcher para capturar imágenes con la cámara
-        cameraLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                if (result.getResultCode() == Activity.RESULT_OK) {
-                    Bundle extras = result.getData().getExtras();
-                    Bitmap imageBitmap = (Bitmap) extras.get("data");
-                    imagenLaptop.setImageBitmap(imageBitmap);
-                    // TODO: Guardar la imagen en un archivo y obtener la ruta
-                }
-            }
-        );
+            });
     }
-
+    
     /**
      * Crea y configura la vista del fragmento, inicializa los elementos de la UI
      * y configura los listeners para los botones y campos de búsqueda.
@@ -92,44 +86,89 @@ public class EdicionFragment extends Fragment {
         FloatingActionButton fabCamera = view.findViewById(R.id.fabCamera);
         FloatingActionButton fabDelete = view.findViewById(R.id.fabDelete);
         FloatingActionButton fabSave = view.findViewById(R.id.fabSave);
+        
+        // Launcher para seleccionar imágenes de la galería
+        imagePickerLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    Uri imageUri = result.getData().getData();
+                    imagenLaptop.setImageURI(imageUri);
+                    saveImageFromUri(imageUri);
+                }
+            }
+        );
+
+        // Launcher para capturar imágenes con la cámara
+        cameraLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    Bundle extras = result.getData().getExtras();
+                    Bitmap imageBitmap = (Bitmap) extras.get("data");
+                    imagenLaptop.setImageBitmap(imageBitmap);
+                    saveImageFromBitmap(imageBitmap);
+                }
+            }
+        );
 
         // Configuración de la funcionalidad de búsqueda
-        ((com.google.android.material.textfield.TextInputLayout) view.findViewById(R.id.searchLayout)).setEndIconOnClickListener(v -> searchLaptop());
+        ((com.google.android.material.textfield.TextInputLayout) view.findViewById(R.id.searchLayout)).setEndIconOnClickListener(v -> {
+            try {
+                searchLaptop();
+            } catch (Exception e) {
+                Toast.makeText(getContext(), "Error al realizar la búsqueda", Toast.LENGTH_SHORT).show();
+            }
+        });
         editSearchSerialNumber.setOnEditorActionListener((v, actionId, event) -> {
-            searchLaptop();
+            try {
+                searchLaptop();
+            } catch (Exception e) {
+                Toast.makeText(getContext(), "Error al realizar la búsqueda", Toast.LENGTH_SHORT).show();
+            }
             return true;
         });
-
         // Botón para tomar una foto con la cámara
-        fabCamera.setOnClickListener(v -> {
-            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
-                cameraLauncher.launch(takePictureIntent);
-            } else {
-                Toast.makeText(getContext(), "Cámara no disponible", Toast.LENGTH_SHORT).show();
+        fabCamera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                    requestCameraPermissionLauncher.launch(android.Manifest.permission.CAMERA);
+                } else {
+                    launchCamera();
+                }
             }
         });
 
         // Botón para eliminar el registro actual
-        fabDelete.setOnClickListener(v -> {
-            if (currentLaptop != null) {
-                new AlertDialog.Builder(getContext())
-                    .setTitle("Confirmar eliminación")
-                    .setMessage("¿Estás seguro de que quieres eliminar este registro?")
-                    .setPositiveButton("Sí", (dialog, which) -> {
-                        dbHelper.eliminarLaptop(currentLaptop.getId());
-                        clearFields();
-                        Toast.makeText(getContext(), "Registro eliminado", Toast.LENGTH_SHORT).show();
-                    })
-                    .setNegativeButton("No", null)
-                    .show();
+        fabDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (currentLaptop != null) {
+                    new AlertDialog.Builder(getContext())
+                        .setTitle("Confirmar eliminación")
+                        .setMessage("¿Estás seguro de que quieres eliminar este registro?")
+                        .setPositiveButton("Sí", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dbHelper.eliminarLaptop(currentLaptop.getId());
+                                clearFields();
+                                Toast.makeText(getContext(), "Registro eliminado", Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .setNegativeButton("No", null)
+                        .show();
+                }
             }
         });
 
         // Botón para guardar los cambios realizados
-        fabSave.setOnClickListener(v -> {
-            if (validateFields()) {
-                saveLaptop();
+        fabSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (validateFields()) {
+                    saveLaptop();
+                }
             }
         });
 
@@ -165,8 +204,18 @@ public class EdicionFragment extends Fragment {
         editEstado.setText(laptop.getEstado());
         editObservacion.setText(laptop.getObservaciones());
         currentImagePath = laptop.getRutaImagen();
-        if (currentImagePath != null) {
-            imagenLaptop.setImageURI(Uri.parse(currentImagePath));
+        if (currentImagePath != null && !currentImagePath.isEmpty()) {
+            try {
+                Uri imageUri = Uri.parse(currentImagePath);
+                imagenLaptop.setImageURI(imageUri);
+            } catch (Exception e) {
+                // Si hay un error al cargar la imagen, mostrar un placeholder o un mensaje
+                imagenLaptop.setImageResource(android.R.color.darker_gray);
+                Toast.makeText(getContext(), "No se pudo cargar la imagen", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            // Si no hay ruta de imagen, mostrar un placeholder
+            imagenLaptop.setImageResource(android.R.color.darker_gray);
         }
     }
 
@@ -233,5 +282,62 @@ public class EdicionFragment extends Fragment {
         editObservacion.setText("");
         imagenLaptop.setImageResource(android.R.color.darker_gray);
         currentImagePath = null;
+    }
+    
+    /**
+     * Guarda una imagen desde un Uri en el almacenamiento local
+     * @param uri El Uri de la imagen a guardar
+     */
+    private void saveImageFromUri(Uri uri) {
+        try {
+            InputStream inputStream = requireContext().getContentResolver().openInputStream(uri);
+            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+            saveImageFromBitmap(bitmap);
+            if (inputStream != null) inputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(getContext(), "Error al guardar la imagen", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /**
+     * Guarda una imagen desde un Bitmap en el almacenamiento local
+     * @param bitmap El Bitmap de la imagen a guardar
+     */
+    private void saveImageFromBitmap(Bitmap bitmap) {
+        try {
+            // Usar el nombre del paquete para crear una estructura de directorios más organizada
+            String packageName = requireContext().getPackageName();
+            File directory = new File(requireContext().getExternalFilesDir(null), packageName + "/laptop_images");
+            if (!directory.exists()) {
+                directory.mkdirs();
+            }
+
+            String fileName = "laptop_" + System.currentTimeMillis() + ".jpg";
+            File file = new File(directory, fileName);
+
+            FileOutputStream fos = new FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+            fos.close();
+
+            currentImagePath = file.getAbsolutePath();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(getContext(), "Error al guardar la imagen", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void launchCamera() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        try {
+            if (takePictureIntent.resolveActivity(requireActivity().getPackageManager()) != null) {
+                cameraLauncher.launch(takePictureIntent);
+            } else {
+                Toast.makeText(getContext(), "Camara no disponible", Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(getContext(), "Error al abrir la cámara", Toast.LENGTH_SHORT).show();
+        }
     }
 }

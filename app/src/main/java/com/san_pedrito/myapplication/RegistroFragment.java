@@ -1,7 +1,10 @@
 package com.san_pedrito.myapplication;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -13,11 +16,14 @@ import android.widget.ImageView;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.fragment.app.Fragment;
-import android.graphics.Bitmap;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.san_pedrito.myapplication.db_kt.LaptopDatabaseHelper;
 import com.san_pedrito.myapplication.db_kt.Laptop;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -29,6 +35,8 @@ public class RegistroFragment extends Fragment {
     private Bitmap capturedImage;
     private ExecutorService executorService;
     private LaptopDatabaseHelper databaseHelper;
+    private String savedImagePath;
+    private ActivityResultLauncher<String> requestCameraPermissionLauncher;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -36,12 +44,37 @@ public class RegistroFragment extends Fragment {
         executorService = Executors.newSingleThreadExecutor();
         databaseHelper = new LaptopDatabaseHelper(requireContext());
         
+        // Initialize permission launcher
+        requestCameraPermissionLauncher = registerForActivityResult(
+            new ActivityResultContracts.RequestPermission(),
+            isGranted -> {
+                if (isGranted) {
+                    // Permission granted, launch camera
+                    launchCamera();
+                } else {
+                    Toast.makeText(getContext(), "Se requiere permiso de cámara para esta función", Toast.LENGTH_SHORT).show();
+                }
+            });
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_registro, container, false);
+        
+        imagenLaptop = view.findViewById(R.id.imagenLaptop);
+        MaterialButton btnSeleccionarImagen = view.findViewById(R.id.btnSeleccionarImagen);
+        MaterialButton btnTomarFoto = view.findViewById(R.id.btnTomarFoto);
+        MaterialButton btnRegistrar = view.findViewById(R.id.btnRegistrar);
+        
+        // Initialize launchers after imagenLaptop is available
         imagePickerLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 if (result.getResultCode() == Activity.RESULT_OK) {
                     selectedImageUri = result.getData().getData();
                     capturedImage = null; // Clear any previous captured image
+                    saveImageFromUri(selectedImageUri);
                     imagenLaptop.setImageURI(selectedImageUri);
                 }
             }
@@ -54,23 +87,13 @@ public class RegistroFragment extends Fragment {
                     Bundle extras = result.getData().getExtras();
                     capturedImage = (Bitmap) extras.get("data");
                     selectedImageUri = null; // Clear any previous selected image
+                    saveImageFromBitmap(capturedImage);
                     imagenLaptop.setImageBitmap(capturedImage);
                 } else {
                     Toast.makeText(getContext(), "Error al tomar foto", Toast.LENGTH_SHORT).show();
                 }
             }
         );
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_registro, container, false);
-        
-        imagenLaptop = view.findViewById(R.id.imagenLaptop);
-        MaterialButton btnSeleccionarImagen = view.findViewById(R.id.btnSeleccionarImagen);
-        MaterialButton btnTomarFoto = view.findViewById(R.id.btnTomarFoto);
-        MaterialButton btnRegistrar = view.findViewById(R.id.btnRegistrar);
         
         // Input fields
         TextInputEditText editMarca = view.findViewById(R.id.editMarca);
@@ -85,11 +108,10 @@ public class RegistroFragment extends Fragment {
         });
 
         btnTomarFoto.setOnClickListener(v -> {
-            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
-                cameraLauncher.launch(takePictureIntent);
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                requestCameraPermissionLauncher.launch(android.Manifest.permission.CAMERA);
             } else {
-                Toast.makeText(getContext(), "Camara no disponible", Toast.LENGTH_SHORT).show();
+                launchCamera();
             }
         });
         
@@ -111,8 +133,7 @@ public class RegistroFragment extends Fragment {
                 return;
             }
             
-            // Create image path (in a real app, you would save the image to storage and get the path)
-            String imagePath = selectedImageUri != null ? selectedImageUri.toString() : "captured_image_" + System.currentTimeMillis();
+            String imagePath = savedImagePath;
             
             // Save to database in background thread
             executorService.execute(() -> {
@@ -141,6 +162,55 @@ public class RegistroFragment extends Fragment {
         return view;
     }
     
+    private void launchCamera() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        try {
+            if (takePictureIntent.resolveActivity(requireActivity().getPackageManager()) != null) {
+                cameraLauncher.launch(takePictureIntent);
+            } else {
+                Toast.makeText(getContext(), "Camara no disponible", Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(getContext(), "Error al abrir la cámara", Toast.LENGTH_SHORT).show();
+        }
+    }
+    
+    private void saveImageFromUri(Uri uri) {
+        try {
+            InputStream inputStream = requireContext().getContentResolver().openInputStream(uri);
+            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+            saveImageFromBitmap(bitmap);
+            if (inputStream != null) inputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(getContext(), "Error al guardar la imagen", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void saveImageFromBitmap(Bitmap bitmap) {
+        try {
+            // Usar el nombre del paquete para crear una estructura de directorios más organizada
+            String packageName = requireContext().getPackageName();
+            File directory = new File(requireContext().getExternalFilesDir(null), packageName + "/laptop_images");
+            if (!directory.exists()) {
+                directory.mkdirs();
+            }
+
+            String fileName = "laptop_" + System.currentTimeMillis() + ".jpg";
+            File file = new File(directory, fileName);
+
+            FileOutputStream fos = new FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+            fos.close();
+
+            savedImagePath = file.getAbsolutePath();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(getContext(), "Error al guardar la imagen", Toast.LENGTH_SHORT).show();
+        }
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
