@@ -52,7 +52,7 @@ public class HistorialAdapter extends RecyclerView.Adapter<HistorialAdapter.Hist
     static class HistorialViewHolder extends RecyclerView.ViewHolder {
         private final ImageView laptopImage;
         private final TextView fechaAccion;
-        private final Chip tipoAccion;
+        private final Chip numeroSerieChip;
         private final TextView marcaModelo;
         private final TextView numeroSerie;
         private final TextView detallesAccion;
@@ -61,7 +61,7 @@ public class HistorialAdapter extends RecyclerView.Adapter<HistorialAdapter.Hist
             super(itemView);
             laptopImage = itemView.findViewById(R.id.laptopImage);
             fechaAccion = itemView.findViewById(R.id.fechaAccion);
-            tipoAccion = itemView.findViewById(R.id.tipoAccion);
+            numeroSerieChip = itemView.findViewById(R.id.numeroSerieChip);
             marcaModelo = itemView.findViewById(R.id.marcaModelo);
             numeroSerie = itemView.findViewById(R.id.numeroSerie);
             detallesAccion = itemView.findViewById(R.id.detallesAccion);
@@ -69,7 +69,7 @@ public class HistorialAdapter extends RecyclerView.Adapter<HistorialAdapter.Hist
 
         public void bind(final Laptop laptop, final OnLaptopClickListener listener) {
             fechaAccion.setText(laptop.getFechaHora());
-            tipoAccion.setText(laptop.getEstado());
+            numeroSerieChip.setText(laptop.getNumeroSerie());
             marcaModelo.setText(String.format("%s %s", laptop.getMarca(), laptop.getModelo()));
             numeroSerie.setText(laptop.getNumeroSerie());
             detallesAccion.setText(String.format("Estado: %s", laptop.getEstado()));

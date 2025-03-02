@@ -41,6 +41,18 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.0") // Añadir dependencia de Kotlin
     implementation("com.github.bumptech.glide:glide:4.16.0") // Add Glide for image loading
     annotationProcessor("com.github.bumptech.glide:compiler:4.16.0") // Glide annotation processor
+    
+    // Apache POI for Excel file handling
+    implementation("org.apache.poi:poi:5.2.3") 
+    implementation("org.apache.poi:poi-ooxml:5.2.3")
+    
+    // Required dependencies for Apache POI on Android
+    implementation("org.apache.commons:commons-compress:1.24.0")
+    implementation("commons-io:commons-io:2.15.1")
+    implementation("org.apache.logging.log4j:log4j-api:2.22.1")
+    implementation("org.apache.xmlbeans:xmlbeans:5.2.0")
+    
+    // Add packagingOptions to avoid conflicts
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

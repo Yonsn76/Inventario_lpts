@@ -29,77 +29,95 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- Botón flotante de exportar con diseño futurista -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabExport"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:contentDescription="Exportar"
+        android:src="@drawable/ic_export_arrow"
+        android:backgroundTint="@color/azul_bebé"
+        app:borderWidth="0dp"
+        app:elevation="12dp"
+        app:rippleColor="#80FFFFFF"
+        app:tint="#072428"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Panel de exportación con diseño futurista -->
+    <LinearLayout
+        android:id="@+id/exportPanel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@drawable/fondo_redondo"
+        android:backgroundTint="#80000000"
+        android:padding="12dp"
+        android:layout_marginBottom="16dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/fabExport"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Botón Excel -->
+        <ImageButton
+            android:id="@+id/btnExcel"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@drawable/fondo_redondo"
+            android:backgroundTint="#1B5E20"
+            android:src="@drawable/excel"
+            android:layout_marginEnd="8dp"
+            android:contentDescription="Exportar a Excel" />
+
+        <!-- Botón PDF -->
+        <ImageButton
+            android:id="@+id/btnPdf"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@drawable/fondo_redondo"
+            android:backgroundTint="#B71C1C"
+            android:src="@drawable/pdf"
+            android:layout_marginEnd="8dp"
+            android:contentDescription="Exportar a PDF" />
+
+        <!-- Botón CSV -->
+        <ImageButton
+            android:id="@+id/btnCsv"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@drawable/fondo_redondo"
+            android:backgroundTint="#0D47A1"
+            android:src="@drawable/csv"
+            android:contentDescription="Exportar a CSV" />
+
+    </LinearLayout>
+
     <!-- Sección de Filtros - Chips para filtrar por tipo de acción -->
     <com.google.android.material.chip.ChipGroup
         android:id="@+id/filterChipGroup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:paddingHorizontal="8dp"
-        app:chipSpacingHorizontal="12dp"
-        app:layout_constraintTop_toBottomOf="@id/titleText"
-        app:singleSelection="true">
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@id/titleText">
 
         <com.google.android.material.chip.Chip
             android:id="@+id/chipTodos"
-            style="@style/Widget.MaterialComponents.Chip.Filter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Todos"
-            android:textColor="#4A148C"
             android:checked="true"
-            app:chipStrokeColor="#CE93D8"
-            app:chipStrokeWidth="1dp"
-            app:checkedIconTint="#CE93D8"
-            app:chipBackgroundColor="@color/white" />
+            style="@style/Widget.MaterialComponents.Chip.Choice" />
 
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chipRegistros"
-            style="@style/Widget.MaterialComponents.Chip.Filter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Registros"
-            android:textColor="#4A148C"
-            app:chipStrokeColor="#CE93D8"
-            app:chipStrokeWidth="1dp"
-            app:checkedIconTint="#CE93D8"
-            app:chipBackgroundColor="@color/white" />
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chipEdiciones"
-            style="@style/Widget.MaterialComponents.Chip.Filter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Ediciones"
-            android:textColor="#4A148C"
-            app:chipStrokeColor="#CE93D8"
-            app:chipStrokeWidth="1dp"
-            app:checkedIconTint="#CE93D8"
-            app:chipBackgroundColor="@color/white" />
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chipEliminaciones"
-            style="@style/Widget.MaterialComponents.Chip.Filter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Eliminaciones"
-            android:textColor="#4A148C"
-            app:chipStrokeColor="#CE93D8"
-            app:chipStrokeWidth="1dp"
-            app:checkedIconTint="#CE93D8"
-            app:chipBackgroundColor="@color/white" />
     </com.google.android.material.chip.ChipGroup>
 
-    <!-- Lista de Historial - RecyclerView para mostrar las tarjetas de historial -->
+    <!-- RecyclerView para mostrar el historial -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/historialRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="24dp"
-        android:clipToPadding="false"
-        android:paddingBottom="20dp"
-        android:paddingHorizontal="4dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/filterChipGroup" />
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@id/filterChipGroup"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
