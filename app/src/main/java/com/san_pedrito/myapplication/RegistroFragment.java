@@ -26,6 +26,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import android.media.MediaScannerConnection;
+import android.os.Environment;
 
 public class RegistroFragment extends Fragment {
     private ImageView imagenLaptop;
@@ -190,19 +192,22 @@ public class RegistroFragment extends Fragment {
 
     private void saveImageFromBitmap(Bitmap bitmap) {
         try {
-            // Usar el nombre del paquete para crear una estructura de directorios más organizada
-            String packageName = requireContext().getPackageName();
-            File directory = new File(requireContext().getExternalFilesDir(null), packageName + "/laptop_images");
-            if (!directory.exists()) {
-                directory.mkdirs();
+            File picturesDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+            File appDir = new File(picturesDir, "Inventario_LPTS");
+            if (!appDir.exists()) {
+                appDir.mkdirs();
             }
 
             String fileName = "laptop_" + System.currentTimeMillis() + ".jpg";
-            File file = new File(directory, fileName);
+            File file = new File(appDir, fileName);
 
             FileOutputStream fos = new FileOutputStream(file);
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
             fos.close();
+
+            // Add the image to the gallery
+            MediaScannerConnection.scanFile(requireContext(),
+                    new String[]{file.getAbsolutePath()}, null, null);
 
             savedImagePath = file.getAbsolutePath();
         } catch (IOException e) {
