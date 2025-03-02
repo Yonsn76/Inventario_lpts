@@ -67,6 +67,9 @@ dependencies {
     implementation("org.apache.logging.log4j:log4j-api:2.22.1")
     implementation("org.apache.xmlbeans:xmlbeans:5.2.0")
     
+    // iText PDF library for PDF generation
+    implementation("com.itextpdf:itext7-core:7.2.5")
+    
     // Add packagingOptions to avoid conflicts
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)

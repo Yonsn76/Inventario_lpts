@@ -49,6 +49,7 @@ public class HistorialFragment extends Fragment {
     private Animation slideUpAnimation;
     private Animation slideDownAnimation;
     private static final int CREATE_EXCEL_FILE = 1;
+    private static final int CREATE_PDF_FILE = 2;
     private List<Laptop> laptopsToExport;
 
     public HistorialFragment() {
@@ -215,19 +216,59 @@ public class HistorialFragment extends Fragment {
         startActivityForResult(intent, CREATE_EXCEL_FILE);
     }
 
+    private void exportToPDF() {
+        if (allLaptops == null || allLaptops.isEmpty()) {
+            Log.d("HistorialFragment", "No hay laptops para exportar a PDF");
+            Toast.makeText(getContext(), "No hay datos para exportar", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Log.d("HistorialFragment", "Preparando exportación a PDF de " + allLaptops.size() + " laptops");
+        
+        // Verificar datos antes de la exportación
+        for (int i = 0; i < Math.min(3, allLaptops.size()); i++) {
+            Laptop laptop = allLaptops.get(i);
+            Log.d("HistorialFragment", "Laptop " + i + " - Serie: " + laptop.getNumeroSerie() 
+                + ", Marca: " + laptop.getMarca()
+                + ", Modelo: " + laptop.getModelo());
+        }
+
+        laptopsToExport = new ArrayList<>(allLaptops); // Crear una copia de la lista
+        Log.d("HistorialFragment", "Lista de exportación PDF creada con " + laptopsToExport.size() + " laptops");
+        
+        // Crear intent para seleccionar ubicación
+        Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("application/pdf");
+        
+        // Generar nombre de archivo sugerido
+        String timeStamp = new java.text.SimpleDateFormat("yyyyMMdd_HHmmss", java.util.Locale.getDefault())
+                .format(new java.util.Date());
+        String fileName = "Inventario_Laptops_" + timeStamp + ".pdf";
+        intent.putExtra(Intent.EXTRA_TITLE, fileName);
+        
+        Log.d("HistorialFragment", "Iniciando selección de archivo PDF: " + fileName);
+        startActivityForResult(intent, CREATE_PDF_FILE);
+    }
+
+    private void exportToCSV() {
+        Toast.makeText(getContext(), "Exportación a CSV será implementada próximamente", Toast.LENGTH_SHORT).show();
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == CREATE_EXCEL_FILE && resultCode == getActivity().RESULT_OK) {
-            if (data != null && data.getData() != null) {
-                if (laptopsToExport == null || laptopsToExport.isEmpty()) {
-                    Toast.makeText(getContext(), "No hay datos para exportar", Toast.LENGTH_SHORT).show();
-                    return;
-                }
+        if (resultCode == getActivity().RESULT_OK && data != null && data.getData() != null) {
+            if (laptopsToExport == null || laptopsToExport.isEmpty()) {
+                Toast.makeText(getContext(), "No hay datos para exportar", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
-                Uri uri = data.getData();
-                int numRegistros = laptopsToExport.size();
-                Toast.makeText(getContext(), "Iniciando exportación de " + numRegistros + " registros...", Toast.LENGTH_SHORT).show();
+            Uri uri = data.getData();
+            int numRegistros = laptopsToExport.size();
+
+            if (requestCode == CREATE_EXCEL_FILE) {
+                Toast.makeText(getContext(), "Iniciando exportación de " + numRegistros + " registros a Excel...", Toast.LENGTH_SHORT).show();
                 
                 ExcelExporter exporter = new ExcelExporter(requireContext());
                 exporter.exportToExcel(laptopsToExport, uri, (success, message) -> {
@@ -242,15 +283,23 @@ public class HistorialFragment extends Fragment {
                     }
                     return kotlin.Unit.INSTANCE;
                 });
+            } else if (requestCode == CREATE_PDF_FILE) {
+                Toast.makeText(getContext(), "Iniciando exportación de " + numRegistros + " registros a PDF...", Toast.LENGTH_SHORT).show();
+                
+                PDFExporter exporter = new PDFExporter(requireContext());
+                exporter.exportToPDF(laptopsToExport, uri, (success, message) -> {
+                    if (getActivity() != null) {
+                        getActivity().runOnUiThread(() -> {
+                            if (success) {
+                                Toast.makeText(getContext(), "Exportación exitosa: " + message, Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(getContext(), "Error en la exportación: " + message, Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    }
+                    return kotlin.Unit.INSTANCE;
+                });
             }
         }
-    }
-
-    private void exportToPDF() {
-        Toast.makeText(getContext(), "Exportación a PDF será implementada próximamente", Toast.LENGTH_SHORT).show();
-    }
-
-    private void exportToCSV() {
-        Toast.makeText(getContext(), "Exportación a CSV será implementada próximamente", Toast.LENGTH_SHORT).show();
     }
 }
