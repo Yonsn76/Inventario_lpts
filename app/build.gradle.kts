@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
+    id("org.jetbrains.kotlin.android") version "1.9.0"
 }
 
 android {
@@ -29,12 +30,15 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+    kotlinOptions {
+        jvmTarget = "11" // Añadir opciones de Kotlin
+    }
 }
 
 dependencies {
-
     implementation(libs.appcompat)
     implementation(libs.material)
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.0") // Añadir dependencia de Kotlin
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

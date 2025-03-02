@@ -16,9 +16,8 @@ import androidx.fragment.app.Fragment;
 import android.graphics.Bitmap;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
-import com.san_pedrito.myapplication.db_kt.AppDatabase;
-import com.san_pedrito.myapplication.db.Laptop;
-import java.util.Date;
+import com.san_pedrito.myapplication.db_kt.LaptopDatabaseHelper;
+import com.san_pedrito.myapplication.db_kt.Laptop;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -29,13 +28,13 @@ public class RegistroFragment extends Fragment {
     private Uri selectedImageUri;
     private Bitmap capturedImage;
     private ExecutorService executorService;
-    private AppDatabase database;
+    private LaptopDatabaseHelper databaseHelper;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         executorService = Executors.newSingleThreadExecutor();
-        database = AppDatabase.getDatabase(requireContext());
+        databaseHelper = new LaptopDatabaseHelper(requireContext());
         
         imagePickerLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -115,12 +114,9 @@ public class RegistroFragment extends Fragment {
             // Create image path (in a real app, you would save the image to storage and get the path)
             String imagePath = selectedImageUri != null ? selectedImageUri.toString() : "captured_image_" + System.currentTimeMillis();
             
-            // Create laptop object with current date
-            Laptop laptop = new Laptop(marca, modelo, numeroSerie, estado, observaciones, imagePath, new Date());
-            
             // Save to database in background thread
             executorService.execute(() -> {
-                long id = database.laptopDao().insert(laptop);
+                long id = databaseHelper.agregarLaptop(marca, modelo, numeroSerie, estado, observaciones, imagePath);
                 
                 // Update UI on main thread
                 getActivity().runOnUiThread(() -> {
