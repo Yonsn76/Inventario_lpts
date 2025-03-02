@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +34,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 public class HistorialFragment extends Fragment {
@@ -46,6 +48,8 @@ public class HistorialFragment extends Fragment {
     private boolean isPanelShowing = false;
     private Animation slideUpAnimation;
     private Animation slideDownAnimation;
+    private static final int CREATE_EXCEL_FILE = 1;
+    private List<Laptop> laptopsToExport;
 
     public HistorialFragment() {
         // Required empty public constructor
@@ -113,6 +117,15 @@ public class HistorialFragment extends Fragment {
         try {
             // Obtener todas las laptops de la base de datos
             allLaptops = dbHelper.obtenerTodasLaptops();
+            Log.d("HistorialFragment", "Laptops cargadas: " + (allLaptops != null ? allLaptops.size() : 0));
+            
+            if (allLaptops != null && !allLaptops.isEmpty()) {
+                // Log de la primera laptop para verificar datos
+                Laptop primeraLaptop = allLaptops.get(0);
+                Log.d("HistorialFragment", "Primera laptop - Serie: " + primeraLaptop.getNumeroSerie() 
+                    + ", Marca: " + primeraLaptop.getMarca()
+                    + ", Modelo: " + primeraLaptop.getModelo());
+            }
             
             // Configurar el adaptador
             adapter = new HistorialAdapter(allLaptops, laptop -> {
@@ -135,6 +148,7 @@ public class HistorialFragment extends Fragment {
                 Toast.makeText(getContext(), "No hay registros disponibles", Toast.LENGTH_SHORT).show();
             }
         } catch (Exception e) {
+            Log.e("HistorialFragment", "Error al cargar laptops: " + e.getMessage());
             Toast.makeText(getContext(), "Error al cargar los registros: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
@@ -167,127 +181,69 @@ public class HistorialFragment extends Fragment {
     }
 
     private void exportToExcel() {
-        // Mostrar mensaje de inicio de exportación
-        Toast.makeText(getContext(), "Iniciando exportación a Excel...", Toast.LENGTH_SHORT).show();
+        if (allLaptops == null || allLaptops.isEmpty()) {
+            Log.d("HistorialFragment", "No hay laptops para exportar");
+            Toast.makeText(getContext(), "No hay datos para exportar", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Log.d("HistorialFragment", "Preparando exportación de " + allLaptops.size() + " laptops");
         
-        // Create a background thread for Excel export
-        new Thread(() -> {
-            // Use a try-with-resources to ensure proper resource cleanup
-            Workbook workbook = null;
-            OutputStream outputStream = null;
-            
-            try {
-                // Verificar si hay datos para exportar
-                if (allLaptops == null) {
-                    getActivity().runOnUiThread(() -> {
-                        Toast.makeText(getContext(), "No hay datos para exportar", Toast.LENGTH_SHORT).show();
-                    });
+        // Verificar datos antes de la exportación
+        for (int i = 0; i < Math.min(3, allLaptops.size()); i++) {
+            Laptop laptop = allLaptops.get(i);
+            Log.d("HistorialFragment", "Laptop " + i + " - Serie: " + laptop.getNumeroSerie() 
+                + ", Marca: " + laptop.getMarca()
+                + ", Modelo: " + laptop.getModelo());
+        }
+
+        laptopsToExport = new ArrayList<>(allLaptops); // Crear una copia de la lista
+        Log.d("HistorialFragment", "Lista de exportación creada con " + laptopsToExport.size() + " laptops");
+        
+        // Crear intent para seleccionar ubicación
+        Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("application/vnd.ms-excel");
+        
+        // Generar nombre de archivo sugerido
+        String timeStamp = new java.text.SimpleDateFormat("yyyyMMdd_HHmmss", java.util.Locale.getDefault())
+                .format(new java.util.Date());
+        String fileName = "Inventario_Laptops_" + timeStamp + ".xls";
+        intent.putExtra(Intent.EXTRA_TITLE, fileName);
+        
+        Log.d("HistorialFragment", "Iniciando selección de archivo: " + fileName);
+        startActivityForResult(intent, CREATE_EXCEL_FILE);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == CREATE_EXCEL_FILE && resultCode == getActivity().RESULT_OK) {
+            if (data != null && data.getData() != null) {
+                if (laptopsToExport == null || laptopsToExport.isEmpty()) {
+                    Toast.makeText(getContext(), "No hay datos para exportar", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                
-                // Create a new workbook
-                workbook = new HSSFWorkbook();
-                Sheet sheet = workbook.createSheet("Inventario Laptops");
 
-                // Create header row with a cell style for headers
-                CellStyle headerStyle = workbook.createCellStyle();
-                Font font = workbook.createFont();
-                font.setBold(true);
-                headerStyle.setFont(font);
+                Uri uri = data.getData();
+                int numRegistros = laptopsToExport.size();
+                Toast.makeText(getContext(), "Iniciando exportación de " + numRegistros + " registros...", Toast.LENGTH_SHORT).show();
                 
-                Row headerRow = sheet.createRow(0);
-                String[] headers = {"Número de Serie", "Marca", "Modelo", "Estado", "Observaciones", "Fecha/Hora"};
-                
-                for (int i = 0; i < headers.length; i++) {
-                    Cell cell = headerRow.createCell(i);
-                    cell.setCellValue(headers[i]);
-                    cell.setCellStyle(headerStyle);
-                }
-
-                // Add data rows
-                if (!allLaptops.isEmpty()) {
-                    int rowNum = 1;
-                    for (Laptop laptop : allLaptops) {
-                        Row row = sheet.createRow(rowNum++);
-                        row.createCell(0).setCellValue(laptop.getNumeroSerie() != null ? laptop.getNumeroSerie() : "");
-                        row.createCell(1).setCellValue(laptop.getMarca() != null ? laptop.getMarca() : "");
-                        row.createCell(2).setCellValue(laptop.getModelo() != null ? laptop.getModelo() : "");
-                        row.createCell(3).setCellValue(laptop.getEstado() != null ? laptop.getEstado() : "");
-                        row.createCell(4).setCellValue(laptop.getObservaciones() != null ? laptop.getObservaciones() : "");
-                        row.createCell(5).setCellValue(laptop.getFechaHora() != null ? laptop.getFechaHora() : "");
+                ExcelExporter exporter = new ExcelExporter(requireContext());
+                exporter.exportToExcel(laptopsToExport, uri, (success, message) -> {
+                    if (getActivity() != null) {
+                        getActivity().runOnUiThread(() -> {
+                            if (success) {
+                                Toast.makeText(getContext(), "Exportación exitosa: " + message, Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(getContext(), "Error en la exportación: " + message, Toast.LENGTH_LONG).show();
+                            }
+                        });
                     }
-                } else {
-                    // Add a message if there's no data
-                    Row row = sheet.createRow(1);
-                    Cell cell = row.createCell(0);
-                    cell.setCellValue("No hay datos disponibles");
-                }
-
-                // Auto-size columns
-                for (int i = 0; i < headers.length; i++) {
-                    sheet.autoSizeColumn(i);
-                }
-
-                // Generate a unique filename
-                String fileName = "Inventario_Laptops_" + System.currentTimeMillis() + ".xls";
-
-                try {
-                    // Create content values for the file
-                    ContentValues values = new ContentValues();
-                    values.put(MediaStore.MediaColumns.DISPLAY_NAME, fileName);
-                    values.put(MediaStore.MediaColumns.MIME_TYPE, "application/vnd.ms-excel");
-                    values.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS);
-    
-                    // Get a URI for the file
-                    Uri uri = requireContext().getContentResolver().insert(MediaStore.Files.getContentUri("external"), values);
-                    
-                    if (uri != null) {
-                        // Open an output stream to write the workbook
-                        outputStream = requireContext().getContentResolver().openOutputStream(uri);
-                        
-                        if (outputStream != null) {
-                            workbook.write(outputStream);
-                            getActivity().runOnUiThread(() -> {
-                                Toast.makeText(getContext(), "Archivo Excel guardado en Descargas: " + fileName, Toast.LENGTH_LONG).show();
-                            });
-                        } else {
-                            throw new IOException("No se pudo abrir el archivo para escritura");
-                        }
-                    } else {
-                        throw new IOException("No se pudo crear el archivo");
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    final String errorMessage = e.getMessage();
-                    getActivity().runOnUiThread(() -> {
-                        Toast.makeText(getContext(), "Error de E/S: " + errorMessage, Toast.LENGTH_SHORT).show();
-                    });
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                final String errorMessage = e.getMessage() != null ? e.getMessage() : "Error desconocido";
-                final String errorClass = e.getClass().getSimpleName();
-                getActivity().runOnUiThread(() -> {
-                    Toast.makeText(getContext(), "Error al exportar: " + errorClass + " - " + errorMessage, Toast.LENGTH_LONG).show();
+                    return kotlin.Unit.INSTANCE;
                 });
-            } finally {
-                // Close resources in finally block to ensure they're always closed
-                try {
-                    if (outputStream != null) {
-                        outputStream.close();
-                    }
-                    if (workbook != null) {
-                        workbook.close();
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    final String closeError = e.getMessage();
-                    getActivity().runOnUiThread(() -> {
-                        Toast.makeText(getContext(), "Error al cerrar recursos: " + closeError, Toast.LENGTH_SHORT).show();
-                    });
-                }
             }
-        }).start();
+        }
     }
 
     private void exportToPDF() {
