@@ -12,67 +12,83 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:padding="16dp">
 
-        <!-- Encabezado con Fecha y Tipo de Acción -->
+        <!-- Imagen de la laptop -->
+        <ImageView
+            android:id="@+id/laptopImage"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:scaleType="centerCrop"
+            android:contentDescription="Imagen de la laptop"
+            android:src="@drawable/ic_laptop_placeholder"
+            app:shapeAppearanceOverlay="@style/RoundedImageView"
+            android:adjustViewBounds="true" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="8dp">
+            android:orientation="vertical"
+            android:layout_marginStart="16dp">
+
+            <!-- Encabezado con Fecha y Tipo de Acción -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="4dp">
+
+                <TextView
+                    android:id="@+id/fechaAccion"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="12sp"
+                    android:text=""
+                    android:textColor="@android:color/darker_gray" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/tipoAccion"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textColor="@android:color/black"
+                    app:chipBackgroundColor="@color/chip_background_color"
+                    app:chipStrokeColor="#E6B3FF"
+                    app:chipStrokeWidth="1.5dp"
+                    app:chipMinHeight="32dp"
+                    app:chipCornerRadius="12dp"
+                    app:checkedIconVisible="false"
+                    style="@style/Widget.MaterialComponents.Chip.Choice" />
+            </LinearLayout>
+
+            <!-- Detalles de la Laptop -->
+            <TextView
+                android:id="@+id/marcaModelo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/black" />
 
             <TextView
-                android:id="@+id/fechaAccion"
-                android:layout_width="0dp"
+                android:id="@+id/numeroSerie"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:text=""
                 android:textSize="14sp"
-                android:text=""
-                android:textColor="@android:color/darker_gray" />
+                android:layout_marginTop="4dp" />
 
-            <com.google.android.material.chip.Chip
-                android:id="@+id/tipoAccion"
-                android:layout_width="wrap_content"
+            <TextView
+                android:id="@+id/detallesAccion"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text=""
-                android:textColor="@android:color/black"
-                app:chipBackgroundColor="@color/chip_background_color"
-                app:chipStrokeColor="#E6B3FF"
-                app:chipStrokeWidth="1.5dp"
-                app:chipMinHeight="32dp"
-                app:chipCornerRadius="12dp"
-                app:checkedIconVisible="false"
-                style="@style/Widget.MaterialComponents.Chip.Choice" />
+                android:textSize="14sp"
+                android:layout_marginTop="4dp"
+                android:textColor="@android:color/darker_gray" />
         </LinearLayout>
-
-        <!-- Detalles de la Laptop -->
-        <TextView
-            android:id="@+id/marcaModelo"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text=""
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="@android:color/black" />
-
-        <TextView
-            android:id="@+id/numeroSerie"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text=""
-            android:textSize="14sp"
-            android:layout_marginTop="4dp" />
-
-        <TextView
-            android:id="@+id/detallesAccion"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text=""
-            android:textSize="14sp"
-            android:layout_marginTop="8dp"
-            android:textColor="@android:color/darker_gray" />
-
     </LinearLayout>
-
 </com.google.android.material.card.MaterialCardView>

@@ -39,6 +39,8 @@ dependencies {
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.0") // Añadir dependencia de Kotlin
+    implementation("com.github.bumptech.glide:glide:4.16.0") // Add Glide for image loading
+    annotationProcessor("com.github.bumptech.glide:compiler:4.16.0") // Glide annotation processor
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
