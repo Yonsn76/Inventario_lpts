@@ -29,23 +29,43 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Sección de Filtros - Chips para filtrar por tipo de acción -->
-    <com.google.android.material.chip.ChipGroup
-        android:id="@+id/filterChipGroup"
+    <!-- Barra de búsqueda -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/searchCard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="2dp"
+        app:cardBackgroundColor="@android:color/white"
         app:layout_constraintTop_toBottomOf="@id/titleText">
 
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chipTodos"
-            android:layout_width="wrap_content"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/searchLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Todos"
-            android:checked="true"
-            style="@style/Widget.MaterialComponents.Chip.Choice" />
+            android:hint="Buscar por número de serie"
+            android:textColorHint="#757575"
+            app:endIconMode="clear_text"
+            app:endIconTint="#757575"
+            app:startIconTint="#757575"
+            app:hintTextColor="@color/nav_inicio"
+            app:boxStrokeColor="@color/nav_inicio"
+            app:startIconDrawable="@drawable/ic_search">
 
-    </com.google.android.material.chip.ChipGroup>
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/searchEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:maxLines="1"
+                android:textColor="#757575"
+                android:textColorHint="#757575" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+    </com.google.android.material.card.MaterialCardView>
 
     <!-- RecyclerView para mostrar el historial -->
     <androidx.recyclerview.widget.RecyclerView
@@ -53,7 +73,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@id/filterChipGroup"
+        app:layout_constraintTop_toBottomOf="@id/searchCard"
         app:layout_constraintBottom_toBottomOf="parent" />
 
     <!-- Panel de exportación con diseño futurista -->

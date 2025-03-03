@@ -1,20 +1,25 @@
 package com.san_pedrito.myapplication;
 
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.chip.Chip;
 import com.san_pedrito.myapplication.db_kt.Laptop;
 import java.util.List;
 import com.bumptech.glide.Glide;
+import android.content.res.ColorStateList;
 
 public class HistorialAdapter extends RecyclerView.Adapter<HistorialAdapter.HistorialViewHolder> {
     private List<Laptop> laptops;
     private OnLaptopClickListener listener;
+    private final int[] cardColors;
 
     public interface OnLaptopClickListener {
         void onLaptopClick(Laptop laptop);
@@ -23,6 +28,15 @@ public class HistorialAdapter extends RecyclerView.Adapter<HistorialAdapter.Hist
     public HistorialAdapter(List<Laptop> laptops, OnLaptopClickListener listener) {
         this.laptops = laptops;
         this.listener = listener;
+        this.cardColors = new int[]{
+            R.color.card_accent_1,
+            R.color.card_accent_2,
+            R.color.card_accent_3,
+            R.color.card_accent_4,
+            R.color.card_accent_5,
+            R.color.card_accent_6,
+            R.color.card_accent_7
+        };
     }
 
     @NonNull
@@ -36,7 +50,9 @@ public class HistorialAdapter extends RecyclerView.Adapter<HistorialAdapter.Hist
     @Override
     public void onBindViewHolder(@NonNull HistorialViewHolder holder, int position) {
         Laptop laptop = laptops.get(position);
-        holder.bind(laptop, listener);
+        // Obtener color basado en la posición
+        int colorResId = cardColors[position % cardColors.length];
+        holder.bind(laptop, listener, colorResId);
     }
 
     @Override
@@ -51,28 +67,36 @@ public class HistorialAdapter extends RecyclerView.Adapter<HistorialAdapter.Hist
 
     static class HistorialViewHolder extends RecyclerView.ViewHolder {
         private final ImageView laptopImage;
-        private final TextView fechaAccion;
-        private final Chip numeroSerieChip;
-        private final TextView marcaModelo;
-        private final TextView numeroSerie;
-        private final TextView detallesAccion;
+        private final TextView tvNombre;
+        private final TextView tvMarca;
+        private final TextView tvModelo;
+        private final Chip chipEstado;
+        private final TextView tvFecha;
+        private final View accentLine;
 
         public HistorialViewHolder(@NonNull View itemView) {
             super(itemView);
             laptopImage = itemView.findViewById(R.id.laptopImage);
-            fechaAccion = itemView.findViewById(R.id.fechaAccion);
-            numeroSerieChip = itemView.findViewById(R.id.numeroSerieChip);
-            marcaModelo = itemView.findViewById(R.id.marcaModelo);
-            numeroSerie = itemView.findViewById(R.id.numeroSerie);
-            detallesAccion = itemView.findViewById(R.id.detallesAccion);
+            tvNombre = itemView.findViewById(R.id.tvNombre);
+            tvMarca = itemView.findViewById(R.id.tvMarca);
+            tvModelo = itemView.findViewById(R.id.tvModelo);
+            chipEstado = itemView.findViewById(R.id.chipEstado);
+            tvFecha = itemView.findViewById(R.id.tvFecha);
+            accentLine = itemView.findViewById(R.id.accentLine);
         }
 
-        public void bind(final Laptop laptop, final OnLaptopClickListener listener) {
-            fechaAccion.setText(laptop.getFechaHora());
-            numeroSerieChip.setText(laptop.getNumeroSerie());
-            marcaModelo.setText(String.format("%s %s", laptop.getMarca(), laptop.getModelo()));
-            numeroSerie.setText(laptop.getNumeroSerie());
-            detallesAccion.setText(String.format("Estado: %s", laptop.getEstado()));
+        public void bind(final Laptop laptop, final OnLaptopClickListener listener, int colorResId) {
+            tvNombre.setText(laptop.getNumeroSerie());
+            tvMarca.setText(laptop.getMarca());
+            tvModelo.setText(laptop.getModelo());
+            chipEstado.setText(laptop.getEstado());
+            tvFecha.setText(laptop.getFechaHora());
+
+            // Aplicar color al accentLine y al chip
+            int color = ContextCompat.getColor(itemView.getContext(), colorResId);
+            accentLine.setBackgroundColor(color);
+            chipEstado.setChipBackgroundColor(ColorStateList.valueOf(adjustAlpha(color, 0.2f)));
+            chipEstado.setTextColor(color);
 
             // Cargar imagen usando Glide
             String imagePath = laptop.getRutaImagen();
@@ -91,6 +115,15 @@ public class HistorialAdapter extends RecyclerView.Adapter<HistorialAdapter.Hist
                     listener.onLaptopClick(laptop);
                 }
             });
+        }
+
+        // Método auxiliar para ajustar la transparencia del color
+        private int adjustAlpha(int color, float factor) {
+            int alpha = Math.round(Color.alpha(color) * factor);
+            int red = Color.red(color);
+            int green = Color.green(color);
+            int blue = Color.blue(color);
+            return Color.argb(alpha, red, green, blue);
         }
     }
 }

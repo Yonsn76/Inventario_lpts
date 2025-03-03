@@ -3,6 +3,8 @@ package com.san_pedrito.myapplication;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.textfield.TextInputEditText;
 import com.san_pedrito.myapplication.db_kt.Laptop;
 import com.san_pedrito.myapplication.db_kt.LaptopDatabaseHelper;
 import com.san_pedrito.myapplication.export_metodo.CSVExporter;
@@ -29,7 +32,7 @@ public class HistorialFragment extends Fragment {
     private HistorialAdapter adapter;
     private LaptopDatabaseHelper dbHelper;
     private ChipGroup filterChipGroup;
-    private List<Laptop> allLaptops;
+    private List<Laptop> allLaptops = new ArrayList<>();
     private View exportPanel;
     private ExportPanelManager exportPanelManager;
     private boolean isPanelShowing = false;
@@ -39,6 +42,7 @@ public class HistorialFragment extends Fragment {
     private static final int CREATE_PDF_FILE = 2;
     private static final int CREATE_CSV_FILE = 3;
     private List<Laptop> laptopsToExport;
+    private TextInputEditText searchEditText;
 
     public HistorialFragment() {
         // Required empty public constructor
@@ -53,24 +57,19 @@ public class HistorialFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_historial, container, false);
 
         // Inicializar RecyclerView
         recyclerView = view.findViewById(R.id.historialRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         
-        // Inicializar ChipGroup para filtros
-        filterChipGroup = view.findViewById(R.id.filterChipGroup);
+
         
         // Inicializar panel de exportación y animaciones
         setupExportPanel(view);
         
         // Cargar todos los registros de laptops
         loadAllLaptops();
-        
-        // Configurar listeners para los chips de filtro
-        setupFilterListeners();
 
         return view;
     }
@@ -142,31 +141,45 @@ public class HistorialFragment extends Fragment {
             e.printStackTrace();
         }
     }
-    
-    private void setupFilterListeners() {
-        // Configurar listener para el grupo de chips
-        filterChipGroup.setOnCheckedChangeListener((group, checkedId) -> {
-            if (checkedId == R.id.chipTodos) {
-                // Mostrar todos los registros
-                if (adapter != null && allLaptops != null) {
-                    adapter.updateLaptops(allLaptops);
-                }
-            } else {
-                // En una versión futura se pueden implementar filtros adicionales
-                // Por ahora solo mostramos todos los registros
-                if (adapter != null && allLaptops != null) {
-                    adapter.updateLaptops(allLaptops);
-                }
-            }
-        });
-    }
-    
+
     @Override
     public void onResume() {
         super.onResume();
         // Recargar datos cuando el fragmento vuelve a ser visible
         // para mostrar cambios realizados en otros fragmentos
         loadAllLaptops();
+    }
+
+    private void setupSearch() {
+        searchEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                filterLaptops(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+    }
+
+    private void filterLaptops(String query) {
+        List<Laptop> filteredList = new ArrayList<>();
+        for (Laptop laptop : allLaptops) {
+            if (matchesSearch(laptop, query.toLowerCase())) {
+                filteredList.add(laptop);
+            }
+        }
+        adapter.updateLaptops(filteredList);
+    }
+
+    private boolean matchesSearch(Laptop laptop, String query) {
+        return laptop.getNumeroSerie().toLowerCase().contains(query) ||
+               laptop.getMarca().toLowerCase().contains(query) ||
+               laptop.getModelo().toLowerCase().contains(query) ||
+               laptop.getEstado().toLowerCase().contains(query);
     }
 
     private void exportToExcel() {

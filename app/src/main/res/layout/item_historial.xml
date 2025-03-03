@@ -4,91 +4,98 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="8dp"
-    android:layout_marginVertical="4dp"
-    app:cardCornerRadius="12dp"
-    app:cardElevation="4dp">
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="8dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="4dp"
+    app:strokeWidth="1dp"
+    app:strokeColor="#1A000000">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="16dp">
+        android:background="@drawable/gradient_card_background">
 
-        <!-- Imagen de la laptop -->
-        <ImageView
+        <View
+            android:id="@+id/accentLine"
+            android:layout_width="4dp"
+            android:layout_height="0dp"
+            android:background="@drawable/accent_line_gradient"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/laptopImage"
             android:layout_width="80dp"
             android:layout_height="80dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
             android:scaleType="centerCrop"
-            android:contentDescription="Imagen de la laptop"
-            android:src="@drawable/ic_laptop_placeholder"
             app:shapeAppearanceOverlay="@style/RoundedImageView"
-            android:adjustViewBounds="true" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/tvNombre"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginStart="16dp">
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:fontFamily="@font/roboto_medium"
+            android:textColor="#1F1F1F"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/laptopImage"
+            app:layout_constraintTop_toTopOf="@id/laptopImage"/>
 
-            <!-- Encabezado con Fecha y Tipo de Acción -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="4dp">
+        <TextView
+            android:id="@+id/tvMarca"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/roboto_regular"
+            android:textColor="#757575"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="@id/tvNombre"
+            app:layout_constraintTop_toBottomOf="@id/tvNombre"/>
 
-                <TextView
-                    android:id="@+id/fechaAccion"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:textSize="12sp"
-                    android:text=""
-                    android:textColor="@android:color/darker_gray" />
+        <TextView
+            android:id="@+id/tvModelo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:fontFamily="@font/roboto_regular"
+            android:textColor="#757575"
+            android:textSize="14sp"
+            app:layout_constraintStart_toEndOf="@id/tvMarca"
+            app:layout_constraintTop_toTopOf="@id/tvMarca"/>
 
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/numeroSerieChip"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text=""
-                    android:textColor="@android:color/black"
-                    app:chipBackgroundColor="@color/chip_background_color"
-                    app:chipStrokeColor="#E6B3FF"
-                    app:chipStrokeWidth="1.5dp"
-                    app:chipMinHeight="32dp"
-                    app:chipCornerRadius="12dp"
-                    app:checkedIconVisible="false"
-                    style="@style/Widget.MaterialComponents.Chip.Choice" />
-            </LinearLayout>
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipEstado"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp"
+            app:chipBackgroundColor="#E8F5E9"
+            app:chipStrokeWidth="0dp"
+            android:textColor="#2E7D32"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@id/tvMarca"
+            app:layout_constraintTop_toBottomOf="@id/tvMarca"/>
 
-            <!-- Detalles de la Laptop -->
-            <TextView
-                android:id="@+id/marcaModelo"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text=""
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="@android:color/black" />
+        <TextView
+            android:id="@+id/tvFecha"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:fontFamily="@font/roboto_light"
+            android:textColor="#9E9E9E"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="@id/chipEstado"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/chipEstado"/>
 
-            <TextView
-                android:id="@+id/numeroSerie"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text=""
-                android:textSize="14sp"
-                android:layout_marginTop="4dp" />
-
-            <TextView
-                android:id="@+id/detallesAccion"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text=""
-                android:textSize="14sp"
-                android:layout_marginTop="4dp"
-                android:textColor="@android:color/darker_gray" />
-        </LinearLayout>
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>
