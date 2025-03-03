@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Radio de las esquinas del borde redondeado que aparece alrededor del ítem seleccionado -->
+    <dimen name="nav_item_corner_radius">16dp</dimen>
+
+    <!-- Grosor del borde que aparece alrededor del ítem seleccionado -->
+    <dimen name="nav_item_stroke_width">2.5dp</dimen>
+
+    <!-- Espacio interno entre el borde del ítem y su contenido (icono y texto) -->
+    <dimen name="nav_item_padding">8dp</dimen>
+
+    <!-- Tamaño de los iconos en la barra de navegación -->
+    <dimen name="nav_item_icon_size">24dp</dimen>
+
+    <!-- Tamaño del texto debajo de los iconos -->
+    <dimen name="nav_item_text_size">12sp</dimen>
+
+    <!-- Espacio vertical entre el icono y el texto -->
+    <dimen name="nav_item_vertical_spacing">4dp</dimen>
+
+    <!-- Margen horizontal entre los ítems de navegación -->
+    <dimen name="nav_item_horizontal_margin">8dp</dimen>
+
+    <!-- Espacio adicional para el efecto de ondulación al tocar -->
+    <dimen name="nav_item_ripple_padding">4dp</dimen>
+
+    <!-- Márgenes horizontales generales de la actividad -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+
+    <!-- Márgenes verticales generales de la actividad -->
+    <dimen name="activity_vertical_margin">16dp</dimen>
+
+</resources>

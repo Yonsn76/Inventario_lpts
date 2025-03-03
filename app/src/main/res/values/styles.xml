@@ -4,4 +4,10 @@
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">8dp</item>
     </style>
+    <style name="BottomNavigationTextStyle">
+        <item name="android:textSize">@dimen/nav_item_text_size</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:layout_marginTop">@dimen/nav_item_vertical_spacing</item>
+    </style>
 </resources>

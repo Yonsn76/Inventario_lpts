@@ -12,26 +12,33 @@
         android:id="@+id/contenedorFragmentos"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/navegacionInferior"
+        app:layout_constraintBottom_toTopOf="@+id/nav_card"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Barra de Navegación Inferior - Menú principal de navegación -->
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/navegacionInferior"
+    <!-- Contenedor del BottomNavigationView -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/nav_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:layout_margin="16dp"
-        android:background="@drawable/nav_background"
-        android:elevation="8dp"
-        app:itemIconTint="@color/nav_item_color"
-        app:itemTextColor="@color/nav_item_color"
-        app:labelVisibilityMode="labeled"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/contenedorFragmentos"
-        app:layout_constraintVertical_bias="0.5"
-        app:menu="@menu/menu_navegacion" />
+        app:layout_constraintStart_toStartOf="parent">
+
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/navegacionInferior"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
+            app:itemIconSize="24dp"
+            app:itemTextAppearanceActive="@style/BottomNavigationTextStyle"
+            app:labelVisibilityMode="selected"
+            app:menu="@menu/menu_navegacion" />
+
+    </com.google.android.material.card.MaterialCardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
