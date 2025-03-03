@@ -47,12 +47,11 @@
             android:layout_height="wrap_content"
             android:hint="Buscar por número de serie"
             android:textColorHint="#757575"
-            app:endIconMode="clear_text"
+            app:endIconMode="custom"
+            app:endIconDrawable="@drawable/ic_search"
             app:endIconTint="#757575"
-            app:startIconTint="#757575"
             app:hintTextColor="@color/nav_inicio"
-            app:boxStrokeColor="@color/nav_inicio"
-            app:startIconDrawable="@drawable/ic_search">
+            app:boxStrokeColor="@color/nav_inicio">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/searchEditText"

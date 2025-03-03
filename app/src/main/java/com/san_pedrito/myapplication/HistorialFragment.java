@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.san_pedrito.myapplication.db_kt.Laptop;
 import com.san_pedrito.myapplication.db_kt.LaptopDatabaseHelper;
 import com.san_pedrito.myapplication.export_metodo.CSVExporter;
@@ -59,12 +60,17 @@ public class HistorialFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_historial, container, false);
 
-        // Inicializar RecyclerView
         recyclerView = view.findViewById(R.id.historialRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        
 
-        
+        TextInputLayout searchLayout = view.findViewById(R.id.searchLayout);
+        searchLayout.setEndIconOnClickListener(v -> {
+            // Aquí puedes agregar la acción de búsqueda
+            TextInputEditText searchEditText = view.findViewById(R.id.searchEditText);
+            String query = searchEditText.getText().toString();
+            filterLaptops(query);
+        });
+
         // Inicializar panel de exportación y animaciones
         setupExportPanel(view);
         
