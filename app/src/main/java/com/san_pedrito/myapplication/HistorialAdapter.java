@@ -25,9 +25,12 @@ public class HistorialAdapter extends RecyclerView.Adapter<HistorialAdapter.Hist
         void onLaptopClick(Laptop laptop);
     }
 
-    public HistorialAdapter(List<Laptop> laptops, OnLaptopClickListener listener) {
-        this.laptops = laptops;
+    public void setOnLaptopClickListener(OnLaptopClickListener listener) {
         this.listener = listener;
+    }
+
+    public HistorialAdapter(List<Laptop> laptops) {
+        this.laptops = laptops;
         this.cardColors = new int[]{
             R.color.card_accent_1,
             R.color.card_accent_2,
@@ -83,6 +86,13 @@ public class HistorialAdapter extends RecyclerView.Adapter<HistorialAdapter.Hist
             chipEstado = itemView.findViewById(R.id.chipEstado);
             tvFecha = itemView.findViewById(R.id.tvFecha);
             accentLine = itemView.findViewById(R.id.accentLine);
+
+            itemView.setOnClickListener(v -> {
+                int position = getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION && listener != null) {
+                    listener.onLaptopClick(laptops.get(position));
+                }
+            });
         }
 
         public void bind(final Laptop laptop, final OnLaptopClickListener listener, int colorResId) {
@@ -109,12 +119,6 @@ public class HistorialAdapter extends RecyclerView.Adapter<HistorialAdapter.Hist
             } else {
                 laptopImage.setImageResource(R.drawable.ic_laptop_placeholder);
             }
-
-            itemView.setOnClickListener(v -> {
-                if (listener != null) {
-                    listener.onLaptopClick(laptop);
-                }
-            });
         }
 
         // Método auxiliar para ajustar la transparencia del color
