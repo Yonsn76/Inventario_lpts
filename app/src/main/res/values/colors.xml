@@ -135,4 +135,9 @@
     <color name="card_accent_5">#66BB6A</color>  <!-- Verde -->
     <color name="card_accent_6">#42A5F5</color>  <!-- Azul -->
     <color name="card_accent_7">#EC407A</color>  <!-- Rosa oscuro -->
+
+    <!-- Colores para estados de laptop -->
+    <color name="estado_bueno">#4CAF50</color>    <!-- Verde -->
+    <color name="estado_regular">#FFA726</color>  <!-- Naranja -->
+    <color name="estado_malo">#EF5350</color>     <!-- Rojo -->
 </resources>

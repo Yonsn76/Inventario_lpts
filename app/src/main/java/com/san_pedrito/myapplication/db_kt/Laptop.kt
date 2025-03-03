@@ -1,5 +1,8 @@
 package com.san_pedrito.myapplication.db_kt
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
 /**
  * Clase de datos que representa una entidad de laptop en el sistema de inventario.
  * @property id Identificador único para la laptop
@@ -11,6 +14,7 @@ package com.san_pedrito.myapplication.db_kt
  * @property rutaImagen Ruta a la imagen almacenada de la laptop
  * @property fechaHora Fecha y hora cuando la laptop fue registrada en el sistema
  */
+@Parcelize
 data class Laptop(
     val id: Long,
     val marca: String,
@@ -20,4 +24,4 @@ data class Laptop(
     val observaciones: String,
     val rutaImagen: String?,
     val fechaHora: String
-)
+) : Parcelable

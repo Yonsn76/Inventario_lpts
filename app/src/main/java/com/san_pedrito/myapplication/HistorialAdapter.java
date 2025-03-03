@@ -16,7 +16,7 @@ import java.util.List;
 import com.bumptech.glide.Glide;
 import android.content.res.ColorStateList;
 
-public class HistorialAdapter extends RecyclerView.Adapter<HistorialAdapter.HistorialViewHolder> {
+public class HistorialAdapter extends RecyclerView.Adapter<HistorialAdapter.ViewHolder> {
     private List<Laptop> laptops;
     private OnLaptopClickListener listener;
     private final int[] cardColors;
@@ -44,14 +44,14 @@ public class HistorialAdapter extends RecyclerView.Adapter<HistorialAdapter.Hist
 
     @NonNull
     @Override
-    public HistorialViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_historial, parent, false);
-        return new HistorialViewHolder(view);
+        return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull HistorialViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Laptop laptop = laptops.get(position);
         // Obtener color basado en la posición
         int colorResId = cardColors[position % cardColors.length];
@@ -68,7 +68,7 @@ public class HistorialAdapter extends RecyclerView.Adapter<HistorialAdapter.Hist
         notifyDataSetChanged();
     }
 
-    static class HistorialViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder {
         private final ImageView laptopImage;
         private final TextView tvNombre;
         private final TextView tvMarca;
@@ -77,7 +77,7 @@ public class HistorialAdapter extends RecyclerView.Adapter<HistorialAdapter.Hist
         private final TextView tvFecha;
         private final View accentLine;
 
-        public HistorialViewHolder(@NonNull View itemView) {
+        public ViewHolder(@NonNull View itemView) {
             super(itemView);
             laptopImage = itemView.findViewById(R.id.laptopImage);
             tvNombre = itemView.findViewById(R.id.tvNombre);

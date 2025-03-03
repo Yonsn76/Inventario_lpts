@@ -122,16 +122,19 @@ public class HistorialFragment extends Fragment {
             }
             
             // Configurar el adaptador
-            adapter = new HistorialAdapter(allLaptops, laptop -> {
-                // Al hacer clic en un item, navegar al fragmento de edición
-                EdicionFragment edicionFragment = new EdicionFragment();
-                Bundle args = new Bundle();
-                args.putString("serial_number", laptop.getNumeroSerie());
-                edicionFragment.setArguments(args);
-                
+            adapter = new HistorialAdapter(new ArrayList<>());
+            adapter.setOnLaptopClickListener(laptop -> {
+                // Abrir el PerfilLaptopFragment
+                PerfilLaptopFragment perfilFragment = PerfilLaptopFragment.newInstance(laptop);
                 getParentFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.contenedorFragmentos, edicionFragment)
+                    .setCustomAnimations(
+                        R.anim.slide_in_up,
+                        R.anim.slide_out_down,
+                        R.anim.slide_in_up,
+                        R.anim.slide_out_down
+                    )
+                    .replace(R.id.contenedorFragmentos, perfilFragment)
                     .addToBackStack(null)
                     .commit();
             });
