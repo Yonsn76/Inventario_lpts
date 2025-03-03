@@ -69,6 +69,12 @@ public class PerfilLaptopFragment extends Fragment {
             }
         }
 
+        // Configurar el botón de cierre
+        view.findViewById(R.id.btnCerrar).setOnClickListener(v -> {
+            // Cerrar el fragmento y volver al anterior
+            getParentFragmentManager().popBackStack();
+        });
+
         return view;
     }
 }

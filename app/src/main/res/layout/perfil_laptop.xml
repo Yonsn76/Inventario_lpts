@@ -73,17 +73,35 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
 
+        <!-- Botón de cierre -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCerrar"
+            android:layout_width="70dp"
+            android:layout_height="50dp"
+            android:text="X"
+            android:textSize="18sp"
+            android:textColor="#00BCD4"
+            android:layout_marginBottom="16dp"
+            app:cornerRadius="20dp"
+            app:strokeWidth="2dp"
+            app:strokeColor="#00BCD4"
+            app:backgroundTint="#1A2A3A"
+            app:rippleColor="#80FFFFFF"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
         <!-- Contenedor scrollable -->
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginTop="16dp"
-            android:layout_marginBottom="96dp"
+            android:layout_marginBottom="72dp"
             android:layout_marginHorizontal="24dp"
             android:scrollbars="none"
             android:clipToPadding="false"
             app:layout_constraintTop_toBottomOf="@id/divider"
-            app:layout_constraintBottom_toBottomOf="parent">
+            app:layout_constraintBottom_toTopOf="@id/btnCerrar">
 
             <!-- Contenedor de información -->
             <androidx.cardview.widget.CardView

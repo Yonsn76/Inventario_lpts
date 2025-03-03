@@ -63,19 +63,36 @@ public class HistorialFragment extends Fragment {
         recyclerView = view.findViewById(R.id.historialRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
+        // Inicializar el adaptador con una lista vacía
+        adapter = new HistorialAdapter(new ArrayList<>());
+        adapter.setOnLaptopClickListener(laptop -> {
+            PerfilLaptopFragment perfilFragment = PerfilLaptopFragment.newInstance(laptop);
+            getParentFragmentManager()
+                .beginTransaction()
+                .setCustomAnimations(
+                    R.anim.slide_in_up,
+                    R.anim.slide_out_down,
+                    R.anim.slide_in_up,
+                    R.anim.slide_out_down
+                )
+                .replace(R.id.contenedorFragmentos, perfilFragment)
+                .addToBackStack(null)
+                .commit();
+        });
+        recyclerView.setAdapter(adapter);
+
+        // Cargar datos inmediatamente
+        loadAllLaptops();
+        
+        // Configurar búsqueda
         TextInputLayout searchLayout = view.findViewById(R.id.searchLayout);
         searchLayout.setEndIconOnClickListener(v -> {
-            // Aquí puedes agregar la acción de búsqueda
             TextInputEditText searchEditText = view.findViewById(R.id.searchEditText);
             String query = searchEditText.getText().toString();
             filterLaptops(query);
         });
 
-        // Inicializar panel de exportación y animaciones
         setupExportPanel(view);
-        
-        // Cargar todos los registros de laptops
-        loadAllLaptops();
 
         return view;
     }
@@ -109,45 +126,17 @@ public class HistorialFragment extends Fragment {
 
     private void loadAllLaptops() {
         try {
-            // Obtener todas las laptops de la base de datos
             allLaptops = dbHelper.obtenerTodasLaptops();
-            Log.d("HistorialFragment", "Laptops cargadas: " + (allLaptops != null ? allLaptops.size() : 0));
             
             if (allLaptops != null && !allLaptops.isEmpty()) {
-                // Log de la primera laptop para verificar datos
-                Laptop primeraLaptop = allLaptops.get(0);
-                Log.d("HistorialFragment", "Primera laptop - Serie: " + primeraLaptop.getNumeroSerie() 
-                    + ", Marca: " + primeraLaptop.getMarca()
-                    + ", Modelo: " + primeraLaptop.getModelo());
-            }
-            
-            // Configurar el adaptador
-            adapter = new HistorialAdapter(new ArrayList<>());
-            adapter.setOnLaptopClickListener(laptop -> {
-                // Abrir el PerfilLaptopFragment
-                PerfilLaptopFragment perfilFragment = PerfilLaptopFragment.newInstance(laptop);
-                getParentFragmentManager()
-                    .beginTransaction()
-                    .setCustomAnimations(
-                        R.anim.slide_in_up,
-                        R.anim.slide_out_down,
-                        R.anim.slide_in_up,
-                        R.anim.slide_out_down
-                    )
-                    .replace(R.id.contenedorFragmentos, perfilFragment)
-                    .addToBackStack(null)
-                    .commit();
-            });
-            
-            recyclerView.setAdapter(adapter);
-            
-            if (allLaptops.isEmpty()) {
+                // Actualizar el adaptador con los datos
+                adapter.updateLaptops(allLaptops);
+            } else {
                 Toast.makeText(getContext(), "No hay registros disponibles", Toast.LENGTH_SHORT).show();
             }
         } catch (Exception e) {
             Log.e("HistorialFragment", "Error al cargar laptops: " + e.getMessage());
-            Toast.makeText(getContext(), "Error al cargar los registros: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
+            Toast.makeText(getContext(), "Error al cargar los registros", Toast.LENGTH_SHORT).show();
         }
     }
 
