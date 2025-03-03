@@ -50,40 +50,62 @@
             app:layout_constraintTop_toTopOf="@id/laptopImage"/>
 
         <TextView
-            android:id="@+id/tvMarca"
+            android:id="@+id/labelMarca"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:fontFamily="@font/roboto_regular"
+            android:text="Marca:"
+            android:textSize="12sp"
             android:textColor="#757575"
+            android:layout_marginStart="16dp"
+            app:layout_constraintStart_toEndOf="@id/laptopImage"
+            app:layout_constraintTop_toBottomOf="@id/tvNombre"
+            android:layout_marginTop="4dp"/>
+
+        <TextView
+            android:id="@+id/tvMarca"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="16dp"
+            android:textColor="#1F1F1F"
             android:textSize="14sp"
-            app:layout_constraintStart_toStartOf="@id/tvNombre"
-            app:layout_constraintTop_toBottomOf="@id/tvNombre"/>
+            app:layout_constraintStart_toEndOf="@id/labelMarca"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/labelMarca"/>
+
+        <TextView
+            android:id="@+id/labelModelo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Modelo:"
+            android:textSize="12sp"
+            android:textColor="#757575"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="4dp"
+            app:layout_constraintStart_toEndOf="@id/laptopImage"
+            app:layout_constraintTop_toBottomOf="@id/tvMarca"/>
 
         <TextView
             android:id="@+id/tvModelo"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:fontFamily="@font/roboto_regular"
-            android:textColor="#757575"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="16dp"
+            android:textColor="#1F1F1F"
             android:textSize="14sp"
-            app:layout_constraintStart_toEndOf="@id/tvMarca"
-            app:layout_constraintTop_toTopOf="@id/tvMarca"/>
+            app:layout_constraintStart_toEndOf="@id/labelModelo"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/labelModelo"/>
 
         <com.google.android.material.chip.Chip
             android:id="@+id/chipEstado"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
-            android:layout_marginBottom="16dp"
-            app:chipBackgroundColor="#E8F5E9"
-            app:chipStrokeWidth="0dp"
-            android:textColor="#2E7D32"
             android:textSize="12sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="@id/tvMarca"
-            app:layout_constraintTop_toBottomOf="@id/tvMarca"/>
+            app:layout_constraintStart_toEndOf="@id/laptopImage"
+            app:layout_constraintTop_toBottomOf="@id/tvModelo"/>
 
         <TextView
             android:id="@+id/tvFecha"

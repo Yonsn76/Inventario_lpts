@@ -42,7 +42,6 @@ public class MainActivity extends AppCompatActivity {
         soundPool.setOnLoadCompleteListener((pool, sampleId, status) -> {
             if (status == 0) {
                 soundLoaded = true;
-                Toast.makeText(this, "Sonido cargado correctamente", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(this, "Error al cargar el sonido", Toast.LENGTH_SHORT).show();
             }
