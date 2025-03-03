@@ -28,6 +28,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import android.media.MediaScannerConnection;
 import android.os.Environment;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 
 public class RegistroFragment extends Fragment {
     private ImageView imagenLaptop;
@@ -135,6 +137,12 @@ public class RegistroFragment extends Fragment {
                 return;
             }
             
+            if (existeNumeroSerie(numeroSerie)) {
+                editSerialNumber.setError("Este número de serie ya existe");
+                shakeView(editSerialNumber);
+                return;
+            }
+            
             String imagePath = savedImagePath;
             
             // Save to database in background thread
@@ -214,6 +222,16 @@ public class RegistroFragment extends Fragment {
             e.printStackTrace();
             Toast.makeText(getContext(), "Error al guardar la imagen", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private boolean existeNumeroSerie(String numeroSerie) {
+        LaptopDatabaseHelper dbHelper = new LaptopDatabaseHelper(requireContext());
+        return dbHelper.existeNumeroSerie(numeroSerie);
+    }
+
+    private void shakeView(View view) {
+        Animation shake = AnimationUtils.loadAnimation(getContext(), R.anim.shake_animation);
+        view.startAnimation(shake);
     }
 
     @Override
