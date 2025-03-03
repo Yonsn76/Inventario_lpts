@@ -31,7 +31,7 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = "11" // Añadir opciones de Kotlin
+        jvmTarget = "11"
     }
     
     packaging {
@@ -53,9 +53,12 @@ android {
 dependencies {
     implementation(libs.appcompat)
     implementation(libs.material)
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.0") // Añadir dependencia de Kotlin
-    implementation("com.github.bumptech.glide:glide:4.16.0") // Add Glide for image loading
-    annotationProcessor("com.github.bumptech.glide:compiler:4.16.0") // Glide annotation processor
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.0")
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+    annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
+    
+    // OpenCSV para manejo de archivos Excel
+    implementation("com.opencsv:opencsv:5.9")
     
     // Apache POI for Excel file handling
     implementation("org.apache.poi:poi:5.2.3") 
@@ -70,7 +73,6 @@ dependencies {
     // iText PDF library for PDF generation
     implementation("com.itextpdf:itext7-core:7.2.5")
     
-    // Add packagingOptions to avoid conflicts
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

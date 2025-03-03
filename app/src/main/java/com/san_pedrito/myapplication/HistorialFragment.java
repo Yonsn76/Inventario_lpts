@@ -1,39 +1,26 @@
 package com.san_pedrito.myapplication;
 
-import android.app.AlertDialog;
-import android.content.ContentValues;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import com.google.android.material.button.MaterialButton;
-import com.google.android.material.chip.Chip;
+
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.san_pedrito.myapplication.db_kt.Laptop;
 import com.san_pedrito.myapplication.db_kt.LaptopDatabaseHelper;
-import com.san_pedrito.myapplication.HistorialAdapter;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import com.san_pedrito.myapplication.export_metodo.CSVExporter;
+import com.san_pedrito.myapplication.export_metodo.ExcelExporter;
+import com.san_pedrito.myapplication.export_metodo.PDFExporter;
 
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,6 +37,7 @@ public class HistorialFragment extends Fragment {
     private Animation slideDownAnimation;
     private static final int CREATE_EXCEL_FILE = 1;
     private static final int CREATE_PDF_FILE = 2;
+    private static final int CREATE_CSV_FILE = 3;
     private List<Laptop> laptopsToExport;
 
     public HistorialFragment() {
@@ -193,27 +181,32 @@ public class HistorialFragment extends Fragment {
         // Verificar datos antes de la exportación
         for (int i = 0; i < Math.min(3, allLaptops.size()); i++) {
             Laptop laptop = allLaptops.get(i);
-            Log.d("HistorialFragment", "Laptop " + i + " - Serie: " + laptop.getNumeroSerie() 
-                + ", Marca: " + laptop.getMarca()
-                + ", Modelo: " + laptop.getModelo());
+            Log.d("HistorialFragment", String.format("Laptop %d - Serie: %s, Marca: %s, Modelo: %s",
+                i, laptop.getNumeroSerie(), laptop.getMarca(), laptop.getModelo()));
         }
 
-        laptopsToExport = new ArrayList<>(allLaptops); // Crear una copia de la lista
-        Log.d("HistorialFragment", "Lista de exportación creada con " + laptopsToExport.size() + " laptops");
-        
-        // Crear intent para seleccionar ubicación
-        Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.setType("application/vnd.ms-excel");
-        
-        // Generar nombre de archivo sugerido
-        String timeStamp = new java.text.SimpleDateFormat("yyyyMMdd_HHmmss", java.util.Locale.getDefault())
-                .format(new java.util.Date());
-        String fileName = "Inventario_Laptops_" + timeStamp + ".xls";
-        intent.putExtra(Intent.EXTRA_TITLE, fileName);
-        
-        Log.d("HistorialFragment", "Iniciando selección de archivo: " + fileName);
-        startActivityForResult(intent, CREATE_EXCEL_FILE);
+        try {
+            laptopsToExport = new ArrayList<>(allLaptops); // Crear una copia de la lista
+            Log.d("HistorialFragment", "Lista de exportación creada con " + laptopsToExport.size() + " laptops");
+            
+            // Crear intent para seleccionar ubicación
+            Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            intent.setType("application/vnd.ms-excel");
+            
+            // Generar nombre de archivo sugerido
+            String timeStamp = new java.text.SimpleDateFormat("yyyyMMdd_HHmmss", java.util.Locale.getDefault())
+                    .format(new java.util.Date());
+            String fileName = "Inventario_Laptops_" + timeStamp + ".xls";
+            intent.putExtra(Intent.EXTRA_TITLE, fileName);
+            
+            Log.d("HistorialFragment", "Iniciando selección de archivo: " + fileName);
+            startActivityForResult(intent, CREATE_EXCEL_FILE);
+            
+        } catch (Exception e) {
+            Log.e("HistorialFragment", "Error al preparar la exportación: " + e.getMessage());
+            Toast.makeText(getContext(), "Error al preparar la exportación: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
     }
 
     private void exportToPDF() {
@@ -252,7 +245,38 @@ public class HistorialFragment extends Fragment {
     }
 
     private void exportToCSV() {
-        Toast.makeText(getContext(), "Exportación a CSV será implementada próximamente", Toast.LENGTH_SHORT).show();
+        if (allLaptops == null || allLaptops.isEmpty()) {
+            Log.d("HistorialFragment", "No hay laptops para exportar a CSV");
+            Toast.makeText(getContext(), "No hay datos para exportar", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Log.d("HistorialFragment", "Preparando exportación a CSV de " + allLaptops.size() + " laptops");
+        
+        // Verificar datos antes de la exportación
+        for (int i = 0; i < Math.min(3, allLaptops.size()); i++) {
+            Laptop laptop = allLaptops.get(i);
+            Log.d("HistorialFragment", "Laptop " + i + " - Serie: " + laptop.getNumeroSerie() 
+                + ", Marca: " + laptop.getMarca()
+                + ", Modelo: " + laptop.getModelo());
+        }
+
+        laptopsToExport = new ArrayList<>(allLaptops); // Crear una copia de la lista
+        Log.d("HistorialFragment", "Lista de exportación CSV creada con " + laptopsToExport.size() + " laptops");
+        
+        // Crear intent para seleccionar ubicación
+        Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("text/csv");
+        
+        // Generar nombre de archivo sugerido
+        String timeStamp = new java.text.SimpleDateFormat("yyyyMMdd_HHmmss", java.util.Locale.getDefault())
+                .format(new java.util.Date());
+        String fileName = "Inventario_Laptops_" + timeStamp + ".csv";
+        intent.putExtra(Intent.EXTRA_TITLE, fileName);
+        
+        Log.d("HistorialFragment", "Iniciando selección de archivo CSV: " + fileName);
+        startActivityForResult(intent, CREATE_CSV_FILE);
     }
 
     @Override
@@ -268,10 +292,35 @@ public class HistorialFragment extends Fragment {
             int numRegistros = laptopsToExport.size();
 
             if (requestCode == CREATE_EXCEL_FILE) {
-                Toast.makeText(getContext(), "Iniciando exportación de " + numRegistros + " registros a Excel...", Toast.LENGTH_SHORT).show();
+                try {
+                    Toast.makeText(getContext(), "Iniciando exportación de " + numRegistros + " registros a Excel...", Toast.LENGTH_SHORT).show();
+                    
+                    ExcelExporter exporter = new ExcelExporter(requireContext());
+                    exporter.exportToExcel(laptopsToExport, uri, (success, message) -> {
+                        if (getActivity() != null) {
+                            getActivity().runOnUiThread(() -> {
+                                if (success) {
+                                    Toast.makeText(getContext(), "Exportación exitosa: " + message, Toast.LENGTH_LONG).show();
+                                } else {
+                                    Toast.makeText(getContext(), "Error en la exportación: " + message, Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        }
+                        return kotlin.Unit.INSTANCE;
+                    });
+                } catch (Exception e) {
+                    Log.e("HistorialFragment", "Error durante la exportación a Excel: " + e.getMessage());
+                    if (getActivity() != null) {
+                        getActivity().runOnUiThread(() -> {
+                            Toast.makeText(getContext(), "Error durante la exportación: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                        });
+                    }
+                }
+            } else if (requestCode == CREATE_PDF_FILE) {
+                Toast.makeText(getContext(), "Iniciando exportación de " + numRegistros + " registros a PDF...", Toast.LENGTH_SHORT).show();
                 
-                ExcelExporter exporter = new ExcelExporter(requireContext());
-                exporter.exportToExcel(laptopsToExport, uri, (success, message) -> {
+                PDFExporter exporter = new PDFExporter(requireContext());
+                exporter.exportToPDF(laptopsToExport, uri, (success, message) -> {
                     if (getActivity() != null) {
                         getActivity().runOnUiThread(() -> {
                             if (success) {
@@ -283,11 +332,11 @@ public class HistorialFragment extends Fragment {
                     }
                     return kotlin.Unit.INSTANCE;
                 });
-            } else if (requestCode == CREATE_PDF_FILE) {
-                Toast.makeText(getContext(), "Iniciando exportación de " + numRegistros + " registros a PDF...", Toast.LENGTH_SHORT).show();
+            } else if (requestCode == CREATE_CSV_FILE) {
+                Toast.makeText(getContext(), "Iniciando exportación de " + numRegistros + " registros a CSV...", Toast.LENGTH_SHORT).show();
                 
-                PDFExporter exporter = new PDFExporter(requireContext());
-                exporter.exportToPDF(laptopsToExport, uri, (success, message) -> {
+                CSVExporter exporter = new CSVExporter(requireContext());
+                exporter.exportToCSV(laptopsToExport, uri, (success, message) -> {
                     if (getActivity() != null) {
                         getActivity().runOnUiThread(() -> {
                             if (success) {
