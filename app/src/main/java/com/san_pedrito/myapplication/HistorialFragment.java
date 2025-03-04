@@ -26,6 +26,7 @@ import com.san_pedrito.myapplication.export_metodo.ExcelExporter;
 import com.san_pedrito.myapplication.export_metodo.PDFExporter;
 import android.app.AlertDialog;
 import com.san_pedrito.myapplication.interfaces.OnLaptopDeleteClickListener;
+import com.san_pedrito.myapplication.interfaces.OnLaptopEditClickListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,12 +72,6 @@ public class HistorialFragment extends Fragment {
             PerfilLaptopFragment perfilFragment = PerfilLaptopFragment.newInstance(laptop);
             getParentFragmentManager()
                 .beginTransaction()
-                .setCustomAnimations(
-                    R.anim.slide_in_up,
-                    R.anim.slide_out_down,
-                    R.anim.slide_in_up,
-                    R.anim.slide_out_down
-                )
                 .replace(R.id.contenedorFragmentos, perfilFragment)
                 .addToBackStack(null)
                 .commit();
@@ -109,6 +104,25 @@ public class HistorialFragment extends Fragment {
                 })
                 .setNegativeButton("Cancelar", null)
                 .show();
+        });
+        adapter.setOnLaptopEditClickListener(laptop -> {
+            EdicionFragment edicionFragment = new EdicionFragment();
+            
+            Bundle args = new Bundle();
+            args.putString("numeroSerie", laptop.getNumeroSerie());
+            edicionFragment.setArguments(args);
+            
+            // Obtener referencia al BottomNavigationView y cambiar a la pestaña de edición
+            com.google.android.material.bottomnavigation.BottomNavigationView bottomNav = 
+                requireActivity().findViewById(R.id.navegacionInferior);
+            bottomNav.setSelectedItemId(R.id.menuEdicion);
+            
+            // Cambiar al fragmento de edición
+            getParentFragmentManager()
+                .beginTransaction()
+                .replace(R.id.contenedorFragmentos, edicionFragment)
+                .addToBackStack(null)
+                .commit();
         });
         recyclerView.setAdapter(adapter);
 

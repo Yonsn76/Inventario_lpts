@@ -52,6 +52,14 @@ public class EdicionFragment extends Fragment {
         super.onCreate(savedInstanceState);
         dbHelper = new LaptopDatabaseHelper(requireContext());
         
+        // Obtener el número de serie de los argumentos
+        Bundle args = getArguments();
+        if (args != null && args.containsKey("numeroSerie")) {
+            String numeroSerie = args.getString("numeroSerie");
+            // Buscar la laptop usando el número de serie
+            currentLaptop = dbHelper.obtenerLaptopPorNumeroSerie(numeroSerie);
+        }
+        
         // Initialize permission launcher
         requestCameraPermissionLauncher = registerForActivityResult(
             new ActivityResultContracts.RequestPermission(),
@@ -171,6 +179,13 @@ public class EdicionFragment extends Fragment {
                 }
             }
         });
+
+        // Si tenemos una laptop, mostrar sus datos
+        if (currentLaptop != null) {
+            displayLaptopData(currentLaptop);
+            // También establecer el número de serie en el campo de búsqueda
+            editSearchSerialNumber.setText(currentLaptop.getNumeroSerie());
+        }
 
         return view;
     }

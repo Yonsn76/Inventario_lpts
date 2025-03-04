@@ -17,11 +17,13 @@ import com.bumptech.glide.Glide;
 import android.content.res.ColorStateList;
 import android.widget.ImageButton;
 import com.san_pedrito.myapplication.interfaces.OnLaptopDeleteClickListener;
+import com.san_pedrito.myapplication.interfaces.OnLaptopEditClickListener;
 
 public class HistorialAdapter extends RecyclerView.Adapter<HistorialAdapter.ViewHolder> {
     private List<Laptop> laptops;
     private OnLaptopClickListener listener;
     private OnLaptopDeleteClickListener deleteListener;
+    private OnLaptopEditClickListener editListener;
     private final int[] cardColors;
 
     public interface OnLaptopClickListener {
@@ -34,6 +36,10 @@ public class HistorialAdapter extends RecyclerView.Adapter<HistorialAdapter.View
 
     public void setOnLaptopDeleteClickListener(OnLaptopDeleteClickListener listener) {
         this.deleteListener = listener;
+    }
+
+    public void setOnLaptopEditClickListener(OnLaptopEditClickListener listener) {
+        this.editListener = listener;
     }
 
     public HistorialAdapter(List<Laptop> laptops) {
@@ -84,6 +90,7 @@ public class HistorialAdapter extends RecyclerView.Adapter<HistorialAdapter.View
         private final TextView tvFecha;
         private final View accentLine;
         private final ImageButton btnDelete;
+        private final ImageButton btnEdit;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -95,6 +102,7 @@ public class HistorialAdapter extends RecyclerView.Adapter<HistorialAdapter.View
             tvFecha = itemView.findViewById(R.id.tvFecha);
             accentLine = itemView.findViewById(R.id.accentLine);
             btnDelete = itemView.findViewById(R.id.btnDelete);
+            btnEdit = itemView.findViewById(R.id.btnEdit);
 
             itemView.setOnClickListener(v -> {
                 int position = getAdapterPosition();
@@ -107,6 +115,13 @@ public class HistorialAdapter extends RecyclerView.Adapter<HistorialAdapter.View
                 int position = getAdapterPosition();
                 if (position != RecyclerView.NO_POSITION && deleteListener != null) {
                     deleteListener.onDeleteClick(position);
+                }
+            });
+
+            btnEdit.setOnClickListener(v -> {
+                int position = getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION && editListener != null) {
+                    editListener.onEditClick(laptops.get(position));
                 }
             });
         }
