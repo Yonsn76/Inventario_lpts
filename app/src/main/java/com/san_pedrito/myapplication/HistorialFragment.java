@@ -24,6 +24,8 @@ import com.san_pedrito.myapplication.db_kt.LaptopDatabaseHelper;
 import com.san_pedrito.myapplication.export_metodo.CSVExporter;
 import com.san_pedrito.myapplication.export_metodo.ExcelExporter;
 import com.san_pedrito.myapplication.export_metodo.PDFExporter;
+import android.app.AlertDialog;
+import com.san_pedrito.myapplication.interfaces.OnLaptopDeleteClickListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,6 +81,35 @@ public class HistorialFragment extends Fragment {
                 .addToBackStack(null)
                 .commit();
         });
+        adapter.setOnLaptopDeleteClickListener(position -> {
+            Laptop laptopToDelete = allLaptops.get(position);
+            
+            new AlertDialog.Builder(requireContext())
+                .setTitle("Confirmar eliminación")
+                .setMessage("¿Estás seguro de que deseas eliminar esta laptop?")
+                .setPositiveButton("Eliminar", (dialog, which) -> {
+                    try {
+                        // Eliminar de la base de datos
+                        dbHelper.eliminarLaptop(laptopToDelete.getId());
+                        
+                        // Eliminar de la lista y actualizar el adaptador
+                        allLaptops.remove(position);
+                        adapter.removeLaptop(position);
+                        
+                        // Recargar la lista completa para asegurar sincronización
+                        loadAllLaptops();
+                        
+                        Toast.makeText(getContext(), "Laptop eliminada exitosamente", 
+                            Toast.LENGTH_SHORT).show();
+                    } catch (Exception e) {
+                        Toast.makeText(getContext(), 
+                            "Error al eliminar: " + e.getMessage(), 
+                            Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNegativeButton("Cancelar", null)
+                .show();
+        });
         recyclerView.setAdapter(adapter);
 
         // Cargar datos inmediatamente
@@ -126,12 +157,18 @@ public class HistorialFragment extends Fragment {
 
     private void loadAllLaptops() {
         try {
-            allLaptops = dbHelper.obtenerTodasLaptops();
+            List<Laptop> newLaptops = dbHelper.obtenerTodasLaptops();
             
-            if (allLaptops != null && !allLaptops.isEmpty()) {
-                // Actualizar el adaptador con los datos
-                adapter.updateLaptops(allLaptops);
+            if (newLaptops != null && !newLaptops.isEmpty()) {
+                // Actualizar la lista local
+                allLaptops.clear();
+                allLaptops.addAll(newLaptops);
+                
+                // Actualizar el adaptador
+                adapter.updateLaptops(new ArrayList<>(allLaptops));
             } else {
+                allLaptops.clear();
+                adapter.updateLaptops(new ArrayList<>());
                 Toast.makeText(getContext(), "No hay registros disponibles", Toast.LENGTH_SHORT).show();
             }
         } catch (Exception e) {
