@@ -18,7 +18,10 @@ import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ListPopupWindow;
 import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -31,6 +34,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import android.text.TextWatcher;
+import android.text.Editable;
 
 public class EdicionFragment extends Fragment {
     // Elementos de la interfaz de usuario
@@ -42,6 +49,7 @@ public class EdicionFragment extends Fragment {
     private Laptop currentLaptop;
     private String currentImagePath;
     private ActivityResultLauncher<String> requestCameraPermissionLauncher;
+    private ListPopupWindow listPopupWindow;
     
     /**
      * Inicializa el fragmento, la conexión a la base de datos y los launchers para
@@ -119,6 +127,27 @@ public class EdicionFragment extends Fragment {
                 }
             }
         );
+
+        // Inicializar ListPopupWindow
+        listPopupWindow = new ListPopupWindow(requireContext());
+        listPopupWindow.setAnchorView(editSearchSerialNumber);
+        listPopupWindow.setModal(false);
+        listPopupWindow.setInputMethodMode(ListPopupWindow.INPUT_METHOD_NEEDED);
+        listPopupWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+
+        // Configurar TextWatcher para las sugerencias en tiempo real
+        editSearchSerialNumber.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                showSerialSuggestions(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
 
         // Configuración de la funcionalidad de búsqueda
         ((com.google.android.material.textfield.TextInputLayout) view.findViewById(R.id.searchLayout)).setEndIconOnClickListener(v -> {
@@ -353,6 +382,64 @@ public class EdicionFragment extends Fragment {
         } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(getContext(), "Error al abrir la cámara", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void showSerialSuggestions(String query) {
+        if (query.length() < 2) {
+            if (listPopupWindow.isShowing()) {
+                listPopupWindow.dismiss();
+            }
+            return;
+        }
+
+        List<String> suggestions = new ArrayList<>();
+        List<Laptop> allLaptops = dbHelper.obtenerTodasLaptops();
+        
+        for (Laptop laptop : allLaptops) {
+            String serial = laptop.getNumeroSerie().toLowerCase();
+            if (serial.contains(query.toLowerCase()) && !serial.equals(query.toLowerCase())) {
+                suggestions.add(laptop.getNumeroSerie());
+                if (suggestions.size() >= 5) break;
+            }
+        }
+
+        if (!suggestions.isEmpty()) {
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                getContext(),
+                R.layout.item_search_suggestion,
+                R.id.text_suggestion,
+                suggestions
+            );
+            
+            listPopupWindow.setAdapter(adapter);
+            listPopupWindow.setWidth(editSearchSerialNumber.getWidth());
+            listPopupWindow.setHeight(ListPopupWindow.WRAP_CONTENT);
+            listPopupWindow.setBackgroundDrawable(getContext().getDrawable(R.drawable.popup_background));
+            listPopupWindow.setVerticalOffset(8);
+            
+            listPopupWindow.setOnItemClickListener((parent, view, position, id) -> {
+                editSearchSerialNumber.setText(suggestions.get(position));
+                editSearchSerialNumber.setSelection(suggestions.get(position).length());
+                searchLaptop();
+                listPopupWindow.dismiss();
+            });
+            
+            if (!listPopupWindow.isShowing()) {
+                listPopupWindow.show();
+            }
+        } else {
+            if (listPopupWindow.isShowing()) {
+                listPopupWindow.dismiss();
+            }
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (listPopupWindow != null) {
+            listPopupWindow.dismiss();
         }
     }
 }

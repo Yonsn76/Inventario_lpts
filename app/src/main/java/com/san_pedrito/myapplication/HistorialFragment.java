@@ -27,6 +27,10 @@ import com.san_pedrito.myapplication.export_metodo.PDFExporter;
 import android.app.AlertDialog;
 import com.san_pedrito.myapplication.interfaces.OnLaptopDeleteClickListener;
 import com.san_pedrito.myapplication.interfaces.OnLaptopEditClickListener;
+import android.widget.ListView;
+import android.widget.ArrayAdapter;
+import android.widget.ListPopupWindow;
+import android.view.WindowManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +51,7 @@ public class HistorialFragment extends Fragment {
     private static final int CREATE_CSV_FILE = 3;
     private List<Laptop> laptopsToExport;
     private TextInputEditText searchEditText;
+    private ListPopupWindow listPopupWindow;
 
     public HistorialFragment() {
         // Required empty public constructor
@@ -131,8 +136,12 @@ public class HistorialFragment extends Fragment {
         
         // Configurar búsqueda
         TextInputLayout searchLayout = view.findViewById(R.id.searchLayout);
+        searchEditText = view.findViewById(R.id.searchEditText);
+        
+        // Configurar el TextWatcher
+        initializeSearchView();
+        
         searchLayout.setEndIconOnClickListener(v -> {
-            TextInputEditText searchEditText = view.findViewById(R.id.searchEditText);
             String query = searchEditText.getText().toString();
             filterLaptops(query);
         });
@@ -199,19 +208,27 @@ public class HistorialFragment extends Fragment {
         loadAllLaptops();
     }
 
-    private void setupSearch() {
+    private void initializeSearchView() {
         searchEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                filterLaptops(s.toString());
+                String query = s.toString();
+                showSerialSuggestions(query);
             }
 
             @Override
             public void afterTextChanged(Editable s) {}
         });
+
+        // Inicializar ListPopupWindow una sola vez
+        listPopupWindow = new ListPopupWindow(requireContext());
+        listPopupWindow.setAnchorView(searchEditText);
+        listPopupWindow.setModal(false); // Cambiar a false para permitir interacción con el EditText
+        listPopupWindow.setInputMethodMode(ListPopupWindow.INPUT_METHOD_NEEDED);
+        listPopupWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
     }
 
     private void filterLaptops(String query) {
@@ -229,6 +246,54 @@ public class HistorialFragment extends Fragment {
                laptop.getMarca().toLowerCase().contains(query) ||
                laptop.getModelo().toLowerCase().contains(query) ||
                laptop.getEstado().toLowerCase().contains(query);
+    }
+
+    private void showSerialSuggestions(String query) {
+        if (query.length() < 2) {
+            if (listPopupWindow.isShowing()) {
+                listPopupWindow.dismiss();
+            }
+            return;
+        }
+
+        List<String> suggestions = new ArrayList<>();
+        for (Laptop laptop : allLaptops) {
+            String serial = laptop.getNumeroSerie().toLowerCase();
+            if (serial.contains(query.toLowerCase()) && !serial.equals(query.toLowerCase())) {
+                suggestions.add(laptop.getNumeroSerie());
+                if (suggestions.size() >= 5) break;
+            }
+        }
+
+        if (!suggestions.isEmpty()) {
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                getContext(),
+                R.layout.item_search_suggestion,
+                R.id.text_suggestion,
+                suggestions
+            );
+            
+            listPopupWindow.setAdapter(adapter);
+            listPopupWindow.setWidth(searchEditText.getWidth());
+            listPopupWindow.setHeight(ListPopupWindow.WRAP_CONTENT);
+            listPopupWindow.setBackgroundDrawable(getContext().getDrawable(R.drawable.popup_background));
+            listPopupWindow.setVerticalOffset(8);
+            
+            listPopupWindow.setOnItemClickListener((parent, view, position, id) -> {
+                searchEditText.setText(suggestions.get(position));
+                searchEditText.setSelection(suggestions.get(position).length());
+                filterLaptops(suggestions.get(position));
+                listPopupWindow.dismiss();
+            });
+            
+            if (!listPopupWindow.isShowing()) {
+                listPopupWindow.show();
+            }
+        } else {
+            if (listPopupWindow.isShowing()) {
+                listPopupWindow.dismiss();
+            }
+        }
     }
 
     private void exportToExcel() {
@@ -411,6 +476,14 @@ public class HistorialFragment extends Fragment {
                     return kotlin.Unit.INSTANCE;
                 });
             }
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (listPopupWindow != null) {
+            listPopupWindow.dismiss();
         }
     }
 }
