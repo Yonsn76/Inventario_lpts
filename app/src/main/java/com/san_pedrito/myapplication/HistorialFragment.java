@@ -159,23 +159,31 @@ public class HistorialFragment extends Fragment {
         exportPanelManager = new ExportPanelManager(exportPanel);
 
         // Configurar botón flotante
-        fabExport.setOnClickListener(v -> exportPanelManager.togglePanel());
-
-        // Configurar botones de exportación
-        view.findViewById(R.id.btnExcel).setOnClickListener(v -> {
-            exportToExcel();
+        fabExport.setOnClickListener(v -> {
             exportPanelManager.togglePanel();
+            // Asegurarse de que el panel no interfiera con los clicks cuando está oculto
+            exportPanel.setClickable(exportPanelManager.isPanelShowing());
+            exportPanel.setEnabled(exportPanelManager.isPanelShowing());
         });
 
-        view.findViewById(R.id.btnPdf).setOnClickListener(v -> {
-            exportToPDF();
-            exportPanelManager.togglePanel();
-        });
+        // Configurar botones de exportación con manejo explícito del estado del panel
+        View.OnClickListener exportButtonClickListener = v -> {
+            if (v.getId() == R.id.btnExcel) {
+                exportToExcel();
+            } else if (v.getId() == R.id.btnPdf) {
+                exportToPDF();
+            } else if (v.getId() == R.id.btnCsv) {
+                exportToCSV();
+            }
+            // Ocultar el panel después de hacer clic en cualquier botón
+            exportPanelManager.hidePanel();
+            exportPanel.setClickable(false);
+            exportPanel.setEnabled(false);
+        };
 
-        view.findViewById(R.id.btnCsv).setOnClickListener(v -> {
-            exportToCSV();
-            exportPanelManager.togglePanel();
-        });
+        view.findViewById(R.id.btnExcel).setOnClickListener(exportButtonClickListener);
+        view.findViewById(R.id.btnPdf).setOnClickListener(exportButtonClickListener);
+        view.findViewById(R.id.btnCsv).setOnClickListener(exportButtonClickListener);
     }
 
     private void loadAllLaptops() {

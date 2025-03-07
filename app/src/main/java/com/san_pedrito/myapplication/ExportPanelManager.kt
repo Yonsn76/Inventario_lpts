@@ -1,6 +1,7 @@
 package com.san_pedrito.myapplication
 
 import android.view.View
+import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 
@@ -10,6 +11,8 @@ class ExportPanelManager(private val panel: View) {
     private lateinit var slideDownAnimation: Animation
 
     init {
+        // Guardar el padre original del panel para poder restaurarlo
+        panel.tag = panel.parent
         setupAnimations()
         setupListeners()
     }
@@ -24,11 +27,20 @@ class ExportPanelManager(private val panel: View) {
         slideDownAnimation = AnimationUtils.loadAnimation(context, slideDownId)
 
         slideDownAnimation.setAnimationListener(object : Animation.AnimationListener {
-            override fun onAnimationStart(animation: Animation?) {}
+            override fun onAnimationStart(animation: Animation?) {
+                // Deshabilitar interacción inmediatamente cuando comienza a cerrarse
+                panel.isClickable = false
+                panel.isEnabled = false
+            }
             override fun onAnimationRepeat(animation: Animation?) {}
             override fun onAnimationEnd(animation: Animation?) {
                 panel.visibility = View.GONE
                 isShowing = false
+                // Asegurarse de que el panel no capture eventos
+                panel.z = -1f
+                panel.clearFocus()
+                // Remover el panel de su padre si es posible
+                (panel.parent as? ViewGroup)?.removeView(panel)
             }
         })
     }
@@ -49,6 +61,13 @@ class ExportPanelManager(private val panel: View) {
     }
 
     private fun showPanel() {
+        // Asegurarse de que el panel esté en su contenedor si fue removido
+        if (panel.parent == null) {
+            (panel.tag as? ViewGroup)?.addView(panel)
+        }
+        panel.z = 1f  // Asegurar que esté por encima
+        panel.isClickable = true
+        panel.isEnabled = true
         panel.visibility = View.VISIBLE
         panel.startAnimation(slideUpAnimation)
         isShowing = true
@@ -56,5 +75,9 @@ class ExportPanelManager(private val panel: View) {
 
     fun hidePanel() {
         panel.startAnimation(slideDownAnimation)
+    }
+
+    fun isPanelShowing(): Boolean {
+        return isShowing
     }
 } 
