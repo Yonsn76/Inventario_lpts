@@ -26,7 +26,7 @@ public class LaptopDatabaseHelper extends SQLiteOpenHelper {
                 "estado TEXT," +
                 "observaciones TEXT," +
                 "ruta_imagen TEXT," +
-                "fecha_hora DATETIME DEFAULT CURRENT_TIMESTAMP)";
+                "fecha_hora TEXT)";  // Cambiado de DATETIME a TEXT
         db.execSQL(CREATE_LAPTOPS_TABLE);
     }
 
@@ -40,12 +40,19 @@ public class LaptopDatabaseHelper extends SQLiteOpenHelper {
                             String estado, String observaciones, String rutaImagen) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
+        
+        // Usar formato simple de 24 horas
+        String fechaHora = new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
+            .format(java.util.Calendar.getInstance().getTime());
+        
         values.put("marca", marca);
         values.put("modelo", modelo);
         values.put("numero_serie", numeroSerie);
         values.put("estado", estado);
         values.put("observaciones", observaciones);
         values.put("ruta_imagen", rutaImagen);
+        values.put("fecha_hora", fechaHora);
+        
         return db.insert("laptops", null, values);
     }
 
