@@ -1,5 +1,6 @@
 package com.san_pedrito.myapplication;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -417,74 +418,67 @@ public class HistorialFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == getActivity().RESULT_OK && data != null && data.getData() != null) {
+        if (resultCode == Activity.RESULT_OK && data != null && data.getData() != null) {
             if (laptopsToExport == null || laptopsToExport.isEmpty()) {
-                Toast.makeText(getContext(), "No hay datos para exportar", Toast.LENGTH_SHORT).show();
+                showToast("No hay datos para exportar");
                 return;
             }
 
             Uri uri = data.getData();
             int numRegistros = laptopsToExport.size();
 
-            if (requestCode == CREATE_EXCEL_FILE) {
-                try {
-                    Toast.makeText(getContext(), "Iniciando exportación de " + numRegistros + " registros a Excel...", Toast.LENGTH_SHORT).show();
-                    
-                    ExcelExporter exporter = new ExcelExporter(requireContext());
-                    exporter.exportToExcel(laptopsToExport, uri, (success, message) -> {
-                        if (getActivity() != null) {
-                            getActivity().runOnUiThread(() -> {
-                                if (success) {
-                                    Toast.makeText(getContext(), "Exportación exitosa: " + message, Toast.LENGTH_LONG).show();
-                                } else {
-                                    Toast.makeText(getContext(), "Error en la exportación: " + message, Toast.LENGTH_LONG).show();
-                                }
-                            });
-                        }
-                        return kotlin.Unit.INSTANCE;
-                    });
-                } catch (Exception e) {
-                    Log.e("HistorialFragment", "Error durante la exportación a Excel: " + e.getMessage());
-                    if (getActivity() != null) {
-                        getActivity().runOnUiThread(() -> {
-                            Toast.makeText(getContext(), "Error durante la exportación: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                        });
-                    }
+            try {
+                switch (requestCode) {
+                    case CREATE_EXCEL_FILE:
+                        handleExcelExport(uri, numRegistros);
+                        break;
+                    case CREATE_PDF_FILE:
+                        handlePdfExport(uri, numRegistros);
+                        break;
+                    case CREATE_CSV_FILE:
+                        handleCsvExport(uri, numRegistros);
+                        break;
                 }
-            } else if (requestCode == CREATE_PDF_FILE) {
-                Toast.makeText(getContext(), "Iniciando exportación de " + numRegistros + " registros a PDF...", Toast.LENGTH_SHORT).show();
-                
-                PDFExporter exporter = new PDFExporter(requireContext());
-                exporter.exportToPDF(laptopsToExport, uri, (success, message) -> {
-                    if (getActivity() != null) {
-                        getActivity().runOnUiThread(() -> {
-                            if (success) {
-                                Toast.makeText(getContext(), "Exportación exitosa: " + message, Toast.LENGTH_LONG).show();
-                            } else {
-                                Toast.makeText(getContext(), "Error en la exportación: " + message, Toast.LENGTH_LONG).show();
-                            }
-                        });
-                    }
-                    return kotlin.Unit.INSTANCE;
-                });
-            } else if (requestCode == CREATE_CSV_FILE) {
-                Toast.makeText(getContext(), "Iniciando exportación de " + numRegistros + " registros a CSV...", Toast.LENGTH_SHORT).show();
-                
-                CSVExporter exporter = new CSVExporter(requireContext());
-                exporter.exportToCSV(laptopsToExport, uri, (success, message) -> {
-                    if (getActivity() != null) {
-                        getActivity().runOnUiThread(() -> {
-                            if (success) {
-                                Toast.makeText(getContext(), "Exportación exitosa: " + message, Toast.LENGTH_LONG).show();
-                            } else {
-                                Toast.makeText(getContext(), "Error en la exportación: " + message, Toast.LENGTH_LONG).show();
-                            }
-                        });
-                    }
-                    return kotlin.Unit.INSTANCE;
-                });
+            } catch (Exception e) {
+                Log.e("HistorialFragment", "Error en exportación: " + e.getMessage());
+                showToast("Error en la exportación: " + e.getMessage());
             }
         }
+    }
+
+    private void showToast(final String message) {
+        if (getActivity() != null) {
+            getActivity().runOnUiThread(() -> 
+                Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show()
+            );
+        }
+    }
+
+    private void handleExcelExport(Uri uri, int numRegistros) {
+        showToast("Iniciando exportación de " + numRegistros + " registros a Excel...");
+        ExcelExporter exporter = new ExcelExporter(requireContext());
+        exporter.exportToExcel(laptopsToExport, uri, (success, message) -> {
+            showToast(message);
+            return kotlin.Unit.INSTANCE;
+        });
+    }
+
+    private void handlePdfExport(Uri uri, int numRegistros) {
+        showToast("Iniciando exportación de " + numRegistros + " registros a PDF...");
+        PDFExporter exporter = new PDFExporter(requireContext());
+        exporter.exportToPDF(laptopsToExport, uri, (success, message) -> {
+            showToast(message);
+            return kotlin.Unit.INSTANCE;
+        });
+    }
+
+    private void handleCsvExport(Uri uri, int numRegistros) {
+        showToast("Iniciando exportación de " + numRegistros + " registros a CSV...");
+        CSVExporter exporter = new CSVExporter(requireContext());
+        exporter.exportToCSV(laptopsToExport, uri, (success, message) -> {
+            showToast(message);
+            return kotlin.Unit.INSTANCE;
+        });
     }
 
     @Override

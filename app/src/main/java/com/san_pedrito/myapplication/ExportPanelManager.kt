@@ -1,6 +1,7 @@
 package com.san_pedrito.myapplication
 
 import android.view.View
+import android.util.Log
 import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
@@ -30,17 +31,17 @@ class ExportPanelManager(private val panel: View) {
             override fun onAnimationStart(animation: Animation?) {
                 // Deshabilitar interacción inmediatamente cuando comienza a cerrarse
                 panel.isClickable = false
-                panel.isEnabled = false
             }
             override fun onAnimationRepeat(animation: Animation?) {}
             override fun onAnimationEnd(animation: Animation?) {
-                panel.visibility = View.GONE
-                isShowing = false
-                // Asegurarse de que el panel no capture eventos
-                panel.z = -1f
-                panel.clearFocus()
-                // Remover el panel de su padre si es posible
-                (panel.parent as? ViewGroup)?.removeView(panel)
+                try {
+                    panel.visibility = View.GONE
+                    isShowing = false
+                    panel.z = -1f
+
+                } catch (e: Exception) {
+                    Log.e("ExportPanelManager", "Error panel: ${e.message}")
+                }
             }
         })
     }
@@ -80,4 +81,4 @@ class ExportPanelManager(private val panel: View) {
     fun isPanelShowing(): Boolean {
         return isShowing
     }
-} 
+}
